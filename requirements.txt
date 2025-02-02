@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+cryptography==3.4.8
+pydantic
+email-validator
+mysqlclient
+pymysql
+itsdangerous
+pyjwt

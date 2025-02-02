@@ -1,0 +1,25 @@
+# Ignorar directorios de caché de Python
+__pycache__/
+*.py[cod]
+
+# Archivos de caché de Python específicos del entorno
+*.pyo
+*.pyd
+*.pdb
+
+# Archivos de configuración local de IDEs y editores de texto
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Entornos virtuales locales
+env/
+venv/
+*.egg-info/
+*.egg
+
+# Archivos de configuración de logs
+*.log
+
+smtp_config.txt
