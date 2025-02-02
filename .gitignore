@@ -23,3 +23,5 @@ venv/
 *.log
 
 smtp_config.txt
+
+database.py
