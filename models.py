@@ -23,4 +23,5 @@ class Paciente(Base):
     AvisoPrivacidad = Column(Boolean, nullable=False)
     CartaConsentimiento = Column(Boolean, nullable=False)
     EsApto = Column(Boolean, default=False, nullable=False) 
-    CorreoVerificado = Column(Boolean, default=False, nullable=False)  
+    CorreoVerificado = Column(Boolean, default=False, nullable=False)
+    formulario_contestado = Column(Boolean, default=False, nullable=False)  

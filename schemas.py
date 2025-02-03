@@ -21,6 +21,8 @@ class PacienteBase(BaseModel):
     CartaConsentimiento: bool
     EsApto: Optional[bool] = None  # Nuevo campo agregado
     CorreoVerificado: Optional[bool] = None  # Nuevo campo
+    formulario_contestado: Optional[bool] = None  # Nuevo campo
+
 
 class PacienteCreate(PacienteBase):
     Contraseña: str

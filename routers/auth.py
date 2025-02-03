@@ -86,8 +86,16 @@ def verificar_correo(token: str, db: Session = Depends(get_db)):
     return HTMLResponse(content=content, status_code=200)
 
 @router.get("/verify-token")
-def verificar_token_autenticado(usuario: dict = Depends(obtener_usuario_actual)):
-    return {"message": "Token válido", "usuario": usuario}
+def verificar_token_autenticado(usuario: dict = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    usuario_db = db.query(Paciente).filter(Paciente.ID_Paciente == usuario["id"]).first()
+    #print(usuario_db.formulario_contestado)
+    return {"message": "Token válido", "usuario": usuario, "formulario_contestado": usuario_db.formulario_contestado}
+
+@router.post("/update-form-status")
+def actualizar_estado_formulario(usuario: Paciente = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    usuario.formulario_contestado = True
+    db.commit()
+    return {"message": "Formulario contestado con éxito"}
 
 @router.post("/forgot-password")
 def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
