@@ -61,7 +61,6 @@ def crear_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_d
 
     # Enviar correo solo si es apto
     if es_apto:
-        print("Hola")
         enviar_correo_verificacion(paciente.Correo)
 
     return nuevo_paciente

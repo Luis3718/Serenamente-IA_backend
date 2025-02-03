@@ -85,6 +85,10 @@ def verificar_correo(token: str, db: Session = Depends(get_db)):
     content = open("verify_success.html", encoding="utf-8").read()
     return HTMLResponse(content=content, status_code=200)
 
+@router.get("/verify-token")
+def verificar_token_autenticado(usuario: dict = Depends(obtener_usuario_actual)):
+    return {"message": "Token válido", "usuario": usuario}
+
 @router.post("/forgot-password")
 def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
     usuario = db.query(Paciente).filter(Paciente.Correo == request.Correo).first()
