@@ -60,15 +60,21 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     if not usuario.CorreoVerificado:
         raise HTTPException(status_code=403, detail="Debes verificar tu correo para usar el sistema")
  
-    # Crear el token JWT
+    # Crear el token JWT con el estado del formulario
     payload = {
         "id": usuario.ID_Paciente,
         "nombre": usuario.Nombre,
+        "formulario_contestado": usuario.formulario_contestado,  # Agregar el estado del formulario
         "exp": datetime.utcnow() + timedelta(hours=2)  # Expira en 2 horas
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-    return {"access_token": token, "message": "Login exitoso"}  
+    return {
+        "access_token": token,
+        "message": "Login exitoso",
+        "formulario_contestado": usuario.formulario_contestado
+    }
+
     
 @router.get("/verify")
 def verificar_correo(token: str, db: Session = Depends(get_db)):
@@ -86,10 +92,8 @@ def verificar_correo(token: str, db: Session = Depends(get_db)):
     return HTMLResponse(content=content, status_code=200)
 
 @router.get("/verify-token")
-def verificar_token_autenticado(usuario: dict = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
-    usuario_db = db.query(Paciente).filter(Paciente.ID_Paciente == usuario["id"]).first()
-    #print(usuario_db.formulario_contestado)
-    return {"message": "Token válido", "usuario": usuario, "formulario_contestado": usuario_db.formulario_contestado}
+def verificar_token_autenticado(usuario: dict = Depends(obtener_usuario_actual)):
+    return {"message": "Token válido", "usuario": usuario}
 
 @router.post("/update-form-status")
 def actualizar_estado_formulario(usuario: Paciente = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
