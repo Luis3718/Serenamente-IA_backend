@@ -31,9 +31,14 @@ CREATE TABLE TratamientoCatalogo (
     Descripcion VARCHAR(20) PRIMARY KEY
 );
 
+CREATE TABLE TiposFormulario (
+    ID_TipoFormulario INTEGER PRIMARY KEY auto_increment,
+    NombreFormulario VARCHAR(255) NOT NULL
+);
+
 -- Tabla para registrar usuarios/pacientes
 CREATE TABLE Pacientes (
-    ID_Paciente SERIAL PRIMARY KEY,
+    ID_Paciente INTEGER PRIMARY KEY auto_increment,
     Nombre VARCHAR(100) NOT NULL,
     Apellidos VARCHAR(100) NOT NULL,
     Correo VARCHAR(100) NOT NULL UNIQUE,
@@ -61,6 +66,43 @@ CREATE TABLE Pacientes (
     FOREIGN KEY (ID_EstadoCivil) REFERENCES EstadosCiviles(ID_EstadoCivil),
     FOREIGN KEY (Sexo) REFERENCES SexoCatalogo(Descripcion),
     FOREIGN KEY (EnTratamiento) REFERENCES TratamientoCatalogo(Descripcion)
+);
+
+-- Tabla de formularios
+CREATE TABLE Formularios (
+    ID_Formulario INTEGER PRIMARY KEY,
+    ID_Paciente INTEGER NOT NULL,
+    ID_TipoFormulario INTEGER NOT NULL,
+    Fecha_Respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
+    FOREIGN KEY (ID_TipoFormulario) REFERENCES TiposFormulario(ID_TipoFormulario)
+);
+
+-- Tabla de preguntas del formulario
+CREATE TABLE Preguntas (
+    ID_Pregunta INTEGER PRIMARY KEY,
+    ID_Formulario INTEGER NOT NULL,
+    Texto VARCHAR(255) NOT NULL,
+    FOREIGN KEY (ID_Formulario) REFERENCES Formularios(ID_Formulario)
+);
+
+-- Tabla de respuestas a las preguntas del formulario
+CREATE TABLE Respuestas (
+    ID_Respuesta INTEGER PRIMARY KEY,
+    ID_Pregunta INTEGER NOT NULL,
+    ID_Paciente INTEGER NOT NULL,
+    Respuesta TEXT NOT NULL,
+    FOREIGN KEY (ID_Pregunta) REFERENCES Preguntas(ID_Pregunta),
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente)
+);
+
+-- Tabla de calificaciones para los formularios
+CREATE TABLE Calificaciones (
+    ID_Calificacion INTEGER PRIMARY KEY,
+    ID_Formulario INTEGER NOT NULL,
+    Puntuacion INTEGER NOT NULL,
+    Categoria VARCHAR(50) NOT NULL, -- Bajo, Medio, Alto
+    FOREIGN KEY (ID_Formulario) REFERENCES Formularios(ID_Formulario)
 );
 
 -- Insertar datos en las tablas de catálogo
@@ -139,3 +181,13 @@ INSERT INTO TratamientoCatalogo (Descripcion) VALUES
 ('psiquiátrico'),
 ('ambos');
 
+-- Insertar los formularios iniciales en el catálogo
+INSERT INTO TiposFormulario (NombreFormulario) VALUES
+('Inventario de Ansiedad de Beck (BAI)'),
+('Inventario de Depresión de Beck (BDI-II)'),
+('MINI - Apartado riesgo suicida'),
+('(WBI5) Índice de Bienestar General-5 de la Organización Mundial de la Salud'),
+('Escala de Estrés Percibido -14 (PSS-14)'),
+('Escala de Atención Plena MAAS'),
+('APOI'),
+('Escala de Autocompasión (SCS)');
