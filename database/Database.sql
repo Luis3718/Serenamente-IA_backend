@@ -70,7 +70,7 @@ CREATE TABLE Pacientes (
 
 -- Tabla de formularios
 CREATE TABLE Formularios (
-    ID_Formulario INTEGER PRIMARY KEY,
+    ID_Formulario INTEGER PRIMARY KEY auto_increment,
     ID_Paciente INTEGER NOT NULL,
     ID_TipoFormulario INTEGER NOT NULL,
     Fecha_Respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -88,7 +88,7 @@ CREATE TABLE Preguntas (
 
 -- Tabla de respuestas a las preguntas del formulario
 CREATE TABLE Respuestas (
-    ID_Respuesta INTEGER PRIMARY KEY,
+    ID_Respuesta INTEGER PRIMARY KEY auto_increment,
     ID_Pregunta INTEGER NOT NULL,
     ID_Paciente INTEGER NOT NULL,
     Respuesta TEXT NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE Respuestas (
 
 -- Tabla de calificaciones para los formularios
 CREATE TABLE Calificaciones (
-    ID_Calificacion INTEGER PRIMARY KEY,
+    ID_Calificacion INTEGER PRIMARY KEY auto_increment,
     ID_Formulario INTEGER NOT NULL,
     Puntuacion INTEGER NOT NULL,
     Categoria VARCHAR(50) NOT NULL, -- Bajo, Medio, Alto

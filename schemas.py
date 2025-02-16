@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
-from datetime import date
-from typing import Optional  # Importar Optional para Python 3.9
+from datetime import date, datetime
+from typing import Optional
 
 class PacienteBase(BaseModel):
     Nombre: str
@@ -33,3 +33,58 @@ class Paciente(PacienteBase):
 
     class Config:
         from_attributes = True  # Esto habilita la conversión desde modelos de SQLAlchemy
+
+class FormularioBase(BaseModel):
+    ID_Paciente: int
+    ID_TipoFormulario: int
+    Fecha_Respuesta: datetime = None
+
+class FormularioCreate(FormularioBase):
+    pass
+
+class Formulario(FormularioBase):
+    ID_Formulario: int
+
+    class Config:
+        from_attributes = True
+
+class PreguntaBase(BaseModel):
+    ID_TipoFormulario: int
+    Texto: str
+
+class PreguntaCreate(PreguntaBase):
+    pass
+
+class Pregunta(PreguntaBase):
+    ID_Pregunta: int
+
+    class Config:
+        from_attributes = True
+
+class RespuestaBase(BaseModel):
+    ID_Pregunta: int
+    ID_Paciente: int
+    Respuesta: str
+
+class RespuestaCreate(RespuestaBase):
+    pass
+
+class Respuesta(RespuestaBase):
+    ID_Respuesta: int
+
+    class Config:
+        from_attributes = True
+
+class CalificacionBase(BaseModel):
+    ID_Formulario: int
+    Puntuacion: int
+    Categoria: str  # Bajo, Medio, Alto
+
+class CalificacionCreate(CalificacionBase):
+    pass
+
+class Calificacion(CalificacionBase):
+    ID_Calificacion: int
+
+    class Config:
+        from_attributes = True

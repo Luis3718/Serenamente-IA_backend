@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import pacientes, auth # Importa los endpoints desde la carpeta routers
+from routers import pacientes, auth, formularios# Importa los endpoints desde la carpeta routers
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
@@ -19,6 +19,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Incluye los routers
 app.include_router(pacientes.router)
+app.include_router(formularios.router)
 app.include_router(auth.router)  # Registra el router de autenticación
 
 if __name__ == "__main__":
