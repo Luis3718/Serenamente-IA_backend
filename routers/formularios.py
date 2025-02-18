@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from schemas import RespuestaCreate, CalificacionCreate
-from models import Formulario, Respuesta, Calificacion
+from schemas import RespuestaCreate, ResultadoCreate
+from models import Formulario, Respuesta, Resultado
 
 router = APIRouter(
     prefix="/formularios",
@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 @router.post("/respuestas")
-def almacenar_respuestas_y_calificacion(data: dict, db: Session = Depends(get_db)):
+def almacenar_respuestas_y_Resultado(data: dict, db: Session = Depends(get_db)):
     # Extraer la información del formulario del JSON
     form_type = data['formType']
     total_score = data['totalScore']
@@ -32,13 +32,13 @@ def almacenar_respuestas_y_calificacion(data: dict, db: Session = Depends(get_db
         )
         db.add(nueva_respuesta)
     
-    # Almacenar la calificación
-    nueva_calificacion = Calificacion(
+    # Almacenar la resultado
+    nueva_Resultado = Resultado(
         ID_Formulario=nuevo_formulario.ID_Formulario,
         Puntuacion=total_score,
         Categoria=category
     )
-    db.add(nueva_calificacion)
+    db.add(nueva_Resultado)
     db.commit()
 
     return {"message": "Formulario y respuestas almacenadas correctamente"}

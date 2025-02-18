@@ -96,9 +96,9 @@ CREATE TABLE Respuestas (
     FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente)
 );
 
--- Tabla de calificaciones para los formularios
-CREATE TABLE Calificaciones (
-    ID_Calificacion INTEGER PRIMARY KEY auto_increment,
+-- Tabla de Resultados para los formularios
+CREATE TABLE Resultados (
+    ID_Resultado INTEGER PRIMARY KEY auto_increment,
     ID_Formulario INTEGER NOT NULL,
     Puntuacion INTEGER NOT NULL,
     Categoria VARCHAR(50) NOT NULL, -- Bajo, Medio, Alto

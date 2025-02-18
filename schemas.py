@@ -75,16 +75,16 @@ class Respuesta(RespuestaBase):
     class Config:
         from_attributes = True
 
-class CalificacionBase(BaseModel):
+class ResultadoBase(BaseModel):
     ID_Formulario: int
     Puntuacion: int
     Categoria: str  # Bajo, Medio, Alto
 
-class CalificacionCreate(CalificacionBase):
+class ResultadoCreate(ResultadoBase):
     pass
 
-class Calificacion(CalificacionBase):
-    ID_Calificacion: int
+class Resultado(ResultadoBase):
+    ID_Resultado: int
 
     class Config:
         from_attributes = True

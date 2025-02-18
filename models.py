@@ -52,9 +52,9 @@ class Respuesta(Base):
     ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), nullable=False)
     Respuesta = Column(String, nullable=False)
 
-class Calificacion(Base):
-    __tablename__ = 'Calificaciones'
-    ID_Calificacion = Column(Integer, primary_key=True, autoincrement=True)
+class Resultado(Base):
+    __tablename__ = 'Resultados'
+    ID_Resultado = Column(Integer, primary_key=True, autoincrement=True)
     ID_Formulario = Column(Integer, ForeignKey('Formularios.ID_Formulario'), nullable=False)
     Puntuacion = Column(Integer, nullable=False)
     Categoria = Column(String(50), nullable=False)  # Bajo, Medio, Alto
