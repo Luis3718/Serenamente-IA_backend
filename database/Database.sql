@@ -189,7 +189,8 @@ INSERT INTO TiposFormulario (NombreFormulario) VALUES
 ('(WBI5) Índice de Bienestar General-5 de la Organización Mundial de la Salud'),
 ('Escala de Estrés Percibido -14 (PSS-14)'),
 ('Escala de Atención Plena MAAS'),
-('APOI'),
+('APOI Desfavorable'),
+('APOI Favorable'),
 ('Escala de Autocompasión (SCS)');
 
 -- Insertar las preguntas del BAI
@@ -292,41 +293,44 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (81, 6, 'Hago cosas sin ponerles mucha atención.'),
 (82, 6, 'Como entre comidas sin estar consciente de que estoy comiendo.');
 
--- Insertar las preguntas para la evaluacion APOI
+-- Insertar las preguntas para la evaluacion APOI desfavorable
 INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (83, 7, 'Si quiero aprender habilidades para gestionar mejor mi vida, prefiero un terapeuta antes que una intervención psicológica online.'),
-(84, 7, 'Una intervención psicológica online puede ayudarme a reconocer los problemas que tengo que enfrentar.'),
-(85, 7, 'Una intervención psicológica online puede inspirarme para abordar mejor mis problemas.'),
-(86, 7, 'Creo que el concepto de intervenciones psicológicas online tiene sentido.'),
-(87, 7, 'Tengo la sensación de que una intervención psicológica online puede ayudarme.'),
-(88, 7, 'Es más probable que me mantenga motivada/o con un terapeuta que con una intervención psicológica online.'),
-(89, 7, 'En situaciones de crisis, un terapeuta puede ayudarme mejor que una intervención psicológica online.');
+(84, 7, 'Es más probable que me mantenga motivada/o con un terapeuta que con una intervención psicológica online.'),
+(85, 7, 'En situaciones de crisis, un terapeuta puede ayudarme mejor que una intervención psicológica online.');
+
+-- Insertar las preguntas para la evaluacion APOI favorable
+INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+(86, 8, 'Una intervención psicológica online puede ayudarme a reconocer los problemas que tengo que enfrentar.'),
+(87, 8, 'Una intervención psicológica online puede inspirarme para abordar mejor mis problemas.'),
+(88, 8, 'Creo que el concepto de intervenciones psicológicas online tiene sentido.'),
+(89, 8, 'Tengo la sensación de que una intervención psicológica online puede ayudarme.');
 
 -- Insertar las preguntas para el de autocompasion
 INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
-(90, 8, 'Me desapruebo y me juzgo por mis defectos y limitaciones.'),
-(91, 8, 'Cuando me siento desanimado tiendo a obsesionarme y fijarme en todo lo que está mal.'),
-(92, 8, 'Cuando las cosas van mal para mí, veo las dificultades como una parte de la vida por la que todos pasan.'),
-(93, 8, 'Cuando pienso en mis limitaciones tiendo a sentirme más separado y aislado del resto del mundo.'),
-(94, 8, 'Intento ser cariñoso/a conmigo mismo/a cuando siento dolor emocional.'),
-(95, 8, 'Cuando fallo en algo importante para mí, me consumen los sentimientos de insuficiencia.'),
-(96, 8, 'Cuando me siento desanimado y triste, me recuerdo a mí mismo que hay muchas otras personas en el mundo que se sienten como yo.'),
-(97, 8, 'Cuando atravieso épocas muy difíciles, tiendo a ser duro/a conmigo mismo/a.'),
-(98, 8, 'Cuando algo me molesta, trato de mantener mis emociones en equilibrio.'),
-(99, 8, 'Cuando me siento incapaz de alguna manera, trato de recordarme que esos sentimientos de incapacidad son compartidos por la mayoría de las personas.'),
-(100, 8, 'Soy intolerante e impaciente con aquellos aspectos de mi personalidad que no me gustan.'),
-(101, 8, 'Cuando atravieso una situación muy difícil, yo mismo/a me proporciono el cuidado y cariño que necesito.'),
-(102, 8, 'Cuando me siento desanimado/a, tiendo a sentir que probablemente la mayoría de las personas son más felices que yo.'),
-(103, 8, 'Cuando sucede algo doloroso, trato de tener una visión equilibrada de la situación.'),
-(104, 8, 'Intento ver mis fallas como parte de la condición humana.'),
-(105, 8, 'Cuando veo aspectos de mí mismo/a que no me gustan, me deprimo.'),
-(106, 8, 'Cuando me equivoco en algo importante para mí, trato de ver las cosas con perspectiva.'),
-(107, 8, 'Cuando realmente estoy en problemas, tiendo a sentir que a otras personas les debe resultar más fácil.'),
-(108, 8, 'Soy amable conmigo mismo/a cuando estoy experimentando sufrimiento.'),
-(109, 8, 'Cuando algo me molesta me dejo llevar por mis sentimientos.'),
-(110, 8, 'Puedo ser un poco insensible hacia mí mismo/a cuando experimento sufrimiento.'),
-(111, 8, 'Cuando me siento deprimido/a trato de observar mis sentimientos con curiosidad y mente abierta.'),
-(112, 8, 'Soy intolerante con mis propios defectos y limitaciones.'),
-(113, 8, 'Cuando sucede algo doloroso tiendo a exagerar la gravedad del incidente.'),
-(114, 8, 'Cuando fallo en algo que es importante para mí, tiendo a sentirme solo en mi fracaso.'),
-(115, 8, 'Intento ser comprensivo y paciente con aquellos aspectos de mi personalidad que no me gustan.');
+(90, 9, 'Me desapruebo y me juzgo por mis defectos y limitaciones.'),
+(91, 9, 'Cuando me siento desanimado tiendo a obsesionarme y fijarme en todo lo que está mal.'),
+(92, 9, 'Cuando las cosas van mal para mí, veo las dificultades como una parte de la vida por la que todos pasan.'),
+(93, 9, 'Cuando pienso en mis limitaciones tiendo a sentirme más separado y aislado del resto del mundo.'),
+(94, 9, 'Intento ser cariñoso/a conmigo mismo/a cuando siento dolor emocional.'),
+(95, 9, 'Cuando fallo en algo importante para mí, me consumen los sentimientos de insuficiencia.'),
+(96, 9, 'Cuando me siento desanimado y triste, me recuerdo a mí mismo que hay muchas otras personas en el mundo que se sienten como yo.'),
+(97, 9, 'Cuando atravieso épocas muy difíciles, tiendo a ser duro/a conmigo mismo/a.'),
+(98, 9, 'Cuando algo me molesta, trato de mantener mis emociones en equilibrio.'),
+(99, 9, 'Cuando me siento incapaz de alguna manera, trato de recordarme que esos sentimientos de incapacidad son compartidos por la mayoría de las personas.'),
+(100, 9, 'Soy intolerante e impaciente con aquellos aspectos de mi personalidad que no me gustan.'),
+(101, 9, 'Cuando atravieso una situación muy difícil, yo mismo/a me proporciono el cuidado y cariño que necesito.'),
+(102, 9, 'Cuando me siento desanimado/a, tiendo a sentir que probablemente la mayoría de las personas son más felices que yo.'),
+(103, 9, 'Cuando sucede algo doloroso, trato de tener una visión equilibrada de la situación.'),
+(104, 9, 'Intento ver mis fallas como parte de la condición humana.'),
+(105, 9, 'Cuando veo aspectos de mí mismo/a que no me gustan, me deprimo.'),
+(106, 9, 'Cuando me equivoco en algo importante para mí, trato de ver las cosas con perspectiva.'),
+(107, 9, 'Cuando realmente estoy en problemas, tiendo a sentir que a otras personas les debe resultar más fácil.'),
+(108, 9, 'Soy amable conmigo mismo/a cuando estoy experimentando sufrimiento.'),
+(109, 9, 'Cuando algo me molesta me dejo llevar por mis sentimientos.'),
+(110, 9, 'Puedo ser un poco insensible hacia mí mismo/a cuando experimento sufrimiento.'),
+(111, 9, 'Cuando me siento deprimido/a trato de observar mis sentimientos con curiosidad y mente abierta.'),
+(112, 9, 'Soy intolerante con mis propios defectos y limitaciones.'),
+(113, 9, 'Cuando sucede algo doloroso tiendo a exagerar la gravedad del incidente.'),
+(114, 9, 'Cuando fallo en algo que es importante para mí, tiendo a sentirme solo en mi fracaso.'),
+(115, 9, 'Intento ser comprensivo y paciente con aquellos aspectos de mi personalidad que no me gustan.');

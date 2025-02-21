@@ -42,3 +42,41 @@ def almacenar_respuestas_y_Resultado(data: dict, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Formulario y respuestas almacenadas correctamente"}
+
+@router.get("/categorias/{id_paciente}")
+def obtener_categorias(id_paciente: int, db: Session = Depends(get_db)):
+    # Definir los IDs de los formularios que quieres consultar
+    ids_formulario = [1, 2, 4, 5]
+    
+    # Realizar la consulta para obtener las categorías basadas en los IDs de formulario y el ID del paciente
+    resultados = db.query(Resultado)\
+        .join(Formulario, Formulario.ID_Formulario == Resultado.ID_Formulario)\
+        .filter(Resultado.ID_Formulario.in_(ids_formulario), Formulario.ID_Paciente == id_paciente)\
+        .all()
+    
+    # Extraer y devolver las categorías
+    categorias = [{"ID_Formulario": resultado.ID_Formulario, "Categoria": resultado.Categoria} for resultado in resultados]
+    if not categorias:
+        raise HTTPException(status_code=404, detail="Resultados no encontrados para el paciente especificado")
+
+    return categorias
+    
+@router.get("/evaluar_paciente/{id_paciente}")
+def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
+    # Definir los IDs de las preguntas que quieres consultar
+    ids_preguntas = [30]  # Aquí pones el ID de la pregunta que quieres evaluar
+
+    # Realizar la consulta para obtener las respuestas del paciente a las preguntas específicas
+    respuestas = db.query(Respuesta)\
+        .filter(Respuesta.ID_Paciente == id_paciente, Respuesta.ID_Pregunta.in_(ids_preguntas))\
+        .all()
+
+    # Evaluar las respuestas
+    for respuesta in respuestas:
+        if respuesta.Respuesta in [2, 3]:  # Asume que las respuestas están guardadas como enteros
+            return {"status": "No apto", "message": "El paciente tiene respuestas que indican no aptitud."}
+
+    if not respuestas:
+        raise HTTPException(status_code=404, detail="No se encontraron respuestas para el paciente especificado")
+
+    return {"status": "Apto", "message": "El paciente no tiene respuestas críticas."}
