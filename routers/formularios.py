@@ -60,7 +60,7 @@ def obtener_categorias(id_paciente: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Resultados no encontrados para el paciente especificado")
 
     return categorias
-    
+
 @router.get("/evaluar_paciente/{id_paciente}")
 def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     # Definir los IDs de las preguntas que quieres consultar
@@ -73,10 +73,40 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
 
     # Evaluar las respuestas
     for respuesta in respuestas:
-        if respuesta.Respuesta in [2, 3]:  # Asume que las respuestas están guardadas como enteros
+        if respuesta.Respuesta in ['2', '3']:  # Asume que las respuestas están guardadas como enteros
             return {"status": "No apto", "message": "El paciente tiene respuestas que indican no aptitud."}
 
-    if not respuestas:
-        raise HTTPException(status_code=404, detail="No se encontraron respuestas para el paciente especificado")
+    # Consultar los resultados del formulario con ID 1 (Ansiedad) para este paciente
+    resultado = db.query(Resultado)\
+        .join(Formulario, Formulario.ID_Formulario == Resultado.ID_Formulario)\
+        .filter(Formulario.ID_Formulario == 1, Formulario.ID_Paciente == id_paciente)\
+        .first()
 
-    return {"status": "Apto", "message": "El paciente no tiene respuestas críticas."}
+    # Verificar la categoría del resultado
+    if resultado and resultado.Categoria == "Severa":
+        return {"status": "No apto", "message": "El paciente tiene un resultado severo en un formulario de ansiedad."}
+
+    # Consultar los resultados del formulario con ID 2 (Depresion) para este paciente
+    resultado = db.query(Resultado)\
+        .join(Formulario, Formulario.ID_Formulario == Resultado.ID_Formulario)\
+        .filter(Formulario.ID_Formulario == 2, Formulario.ID_Paciente == id_paciente)\
+        .first()
+
+    # Verificar la categoría del resultado
+    if resultado and resultado.Categoria == "Severa":
+        return {"status": "No apto", "message": "El paciente tiene un resultado severo en un formulario de depresion."}
+
+    # Consultar los resultados del formulario con ID 3 (Riesgo Suicida) para este paciente
+    resultado_form3 = db.query(Resultado)\
+        .join(Formulario, Formulario.ID_Formulario == Resultado.ID_Formulario)\
+        .filter(Formulario.ID_Formulario == 3, Formulario.ID_Paciente == id_paciente)\
+        .first()
+
+    if resultado_form3 and resultado_form3.Categoria in ["Moderado", "Severa"]:
+        return {"status": "No apto", "message": "El paciente tiene un resultado moderado o severo en el formulario de riesgo suicida, lo cual excluye su aptitud."}
+
+    if not respuestas and not resultado:
+        raise HTTPException(status_code=404, detail="No se encontraron respuestas o resultados para el paciente especificado")
+
+    return {"status": "Apto", "message": "El paciente no tiene respuestas críticas ni resultados severos."}
+
