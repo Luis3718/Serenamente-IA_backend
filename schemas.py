@@ -19,9 +19,11 @@ class PacienteBase(BaseModel):
     NombreMedicacion: Optional[str] = None
     AvisoPrivacidad: bool
     CartaConsentimiento: bool
-    EsApto: Optional[bool] = None  # Nuevo campo agregado
-    CorreoVerificado: Optional[bool] = None  # Nuevo campo
-    formulario_contestado: Optional[bool] = None  # Nuevo campo
+    EsApto: Optional[bool] = None  
+    CorreoVerificado: Optional[bool] = None  
+    formulario_contestado: Optional[bool] = None  
+    entrevista_contestada: Optional[bool] = None  
+    en_pausa: Optional[bool] = None  
 
 
 class PacienteCreate(PacienteBase):

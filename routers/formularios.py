@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from schemas import RespuestaCreate, ResultadoCreate
-from models import Formulario, Respuesta, Resultado
+from models import Formulario, Respuesta, Resultado, Paciente
 
 router = APIRouter(
     prefix="/formularios",
@@ -108,5 +108,10 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     if not respuestas and not resultado:
         raise HTTPException(status_code=404, detail="No se encontraron respuestas o resultados para el paciente especificado")
 
-    return {"status": "Apto", "message": "El paciente no tiene respuestas críticas ni resultados severos."}
-
+    paciente = db.query(Paciente).filter_by(ID_Paciente=id_paciente).first()
+    if paciente:
+        paciente.formulario_contestado = True
+        db.commit()
+        return {"status": "Apto", "message": "El paciente es apto y el formulario ha sido marcado como contestado."}
+    else:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")

@@ -25,7 +25,9 @@ class Paciente(Base):
     CartaConsentimiento = Column(Boolean, nullable=False)
     EsApto = Column(Boolean, default=False, nullable=False) 
     CorreoVerificado = Column(Boolean, default=False, nullable=False)
-    formulario_contestado = Column(Boolean, default=False, nullable=False)  
+    formulario_contestado = Column(Boolean, default=False, nullable=False) 
+    entrevista_contestada = Column(Boolean, default=False, nullable=False)  
+    en_pausa = Column(Boolean, default=False, nullable=False)  
 
 class TiposFormulario(Base):
     __tablename__ = 'TiposFormulario'
