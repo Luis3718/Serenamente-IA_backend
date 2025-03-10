@@ -65,6 +65,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         "id": usuario.ID_Paciente,
         "nombre": usuario.Nombre,
         "formulario_contestado": usuario.formulario_contestado,  # Agregar el estado del formulario
+        "entrevista_contestada": usuario.entrevista_contestada,
         "exp": datetime.utcnow() + timedelta(hours=2)  # Expira en 2 horas
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -72,7 +73,8 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "message": "Login exitoso",
-        "formulario_contestado": usuario.formulario_contestado
+        "formulario_contestado": usuario.formulario_contestado,
+        "entrevista_contestada": usuario.entrevista_contestada
     }
 
     

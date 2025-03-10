@@ -61,6 +61,26 @@ def obtener_categorias(id_paciente: int, db: Session = Depends(get_db)):
 
     return categorias
 
+@router.post("/contestar_pretest/{id_paciente}")
+def entrevista_contestada(id_paciente: int, db: Session = Depends(get_db)):
+    paciente = db.query(Paciente).filter_by(ID_Paciente=id_paciente).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+    
+    paciente.formulario_contestado = True
+    db.commit()
+    return {"message": "Pre-test marcado como contestado"}
+
+@router.post("/contestar_entrevista/{id_paciente}")
+def entrevista_contestada(id_paciente: int, db: Session = Depends(get_db)):
+    paciente = db.query(Paciente).filter_by(ID_Paciente=id_paciente).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+    
+    paciente.entrevista_contestada = True
+    db.commit()
+    return {"message": "Entrevista marcada como contestada"}
+
 @router.get("/evaluar_paciente/{id_paciente}")
 def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     # Definir los IDs de las preguntas que quieres consultar
@@ -110,8 +130,6 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
 
     paciente = db.query(Paciente).filter_by(ID_Paciente=id_paciente).first()
     if paciente:
-        paciente.formulario_contestado = True
-        db.commit()
         return {"status": "Apto", "message": "El paciente es apto y el formulario ha sido marcado como contestado."}
     else:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")

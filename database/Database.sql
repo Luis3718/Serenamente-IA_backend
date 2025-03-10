@@ -52,7 +52,7 @@ CREATE TABLE Pacientes (
     ID_Residencia INTEGER NOT NULL,
     ID_EstadoCivil INTEGER NOT NULL,
     EnTratamiento VARCHAR(20) NOT NULL,
-    TomaMedicamentos VARCHAR(255), -- Campo libre para escribir el medicamento
+    TomaMedicamentos VARCHAR(255),
     NombreMedicacion VARCHAR(255),
     AvisoPrivacidad BOOLEAN NOT NULL,
     CartaConsentimiento BOOLEAN NOT NULL,
@@ -316,7 +316,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (92, 9, "Durante el último mes, ¿a que hora se ha estado levantando por la mañana?"),
 (93, 9, "¿Cuántas horas calcula que habrá dormido verdaderamente cada noche durante el último mes?"),
 (94, 9, "Respuesta personalizada"),
-(95, 9 , "Durante el último mes, ¿cuántas veces ha tenido problemas para dormir a causa de (Respuesta personalizada): ")
+(95, 9 , "Durante el último mes, ¿cuántas veces ha tenido problemas para dormir a causa de (Respuesta personalizada): "),
 (96, 9, "Durante el último mes, ¿cuántas veces ha tenido problemas para dormir a causa de no poder conciliar el sueño en la primera media hora?"),
 (97, 9, "Durante el último mes, ¿cuántas veces ha tenido problemas para dormir a causa de despertarse durante la noche o de madrugada?"),
 (98, 9, "Durante el último mes, ¿cuántas veces ha tenido problemas para dormir a causa de tener que levantarse para ir al sanitario?"),
