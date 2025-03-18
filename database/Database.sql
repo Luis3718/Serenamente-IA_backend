@@ -194,7 +194,8 @@ INSERT INTO TiposFormulario (NombreFormulario) VALUES
 ('APOI Desfavorable'),
 ('APOI Favorable'),
 ('Índice de Calidad de Sueño de Pittsburgh'),
-('Escala de Autocompasión (SCS)');
+('Escala de Autocompasión (SCS)'),
+('Entrevista Chatbot');
 
 -- Insertar las preguntas del BAI
 INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
@@ -360,3 +361,12 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (133, 10, 'Cuando sucede algo doloroso tiendo a exagerar la gravedad del incidente.'),
 (134, 10, 'Cuando fallo en algo que es importante para mí, tiendo a sentirme solo en mi fracaso.'),
 (135, 10, 'Intento ser comprensivo y paciente con aquellos aspectos de mi personalidad que no me gustan.');
+
+-- Insertar las preguntas para la entrevista con el Chatbot
+INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+(136, 11, '¿Has estado en terapia psicológica previamente?'),
+(137, 11, '¿Cuánto tiempo dedicas a la semana a tu salud emocional?'),
+(138, 11, '¿Sabes lo que es el mindfulness o atención plena?'),
+(139, 11, '¿Has practicado mindfulness?'),
+(140, 11, '¿Qué es lo más desafiante para ti al practicar mindfulness?'),
+(141, 11, '¿Qué te gustaría mejorar con mindfulness?');
