@@ -84,7 +84,7 @@ CREATE TABLE Formularios (
 CREATE TABLE Preguntas (
     ID_Pregunta INTEGER PRIMARY KEY,
     ID_TipoFormulario INTEGER NOT NULL,
-    Texto VARCHAR(255) NOT NULL,
+    Texto VARCHAR(512) NOT NULL,
     FOREIGN KEY (ID_TipoFormulario) REFERENCES Tiposformulario(ID_TipoFormulario)
 );
 
@@ -364,9 +364,15 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 
 -- Insertar las preguntas para la entrevista con el Chatbot
 INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
-(136, 11, '¿Has estado en terapia psicológica previamente?'),
-(137, 11, '¿Cuánto tiempo dedicas a la semana a tu salud emocional?'),
-(138, 11, '¿Sabes lo que es el mindfulness o atención plena?'),
-(139, 11, '¿Has practicado mindfulness?'),
-(140, 11, '¿Qué es lo más desafiante para ti al practicar mindfulness?'),
-(141, 11, '¿Qué te gustaría mejorar con mindfulness?');
+(136, 11, '¿Me gustaría saber si has estado en terapia psicológica antes?'),
+(137, 11, '¿Hace cuánto fue esa terapia, en meses?'),
+(138, 11, '¿Cuánto tiempo consideras que dedicas a la semana  a tu salud emocional (talleres, podcast, asesorías, etc)?'),
+(139, 11, '¿Cuánto tiempo dedicas a la semana a realizar actividades físicas (deportes como correr, nadar, pesas, o a través de caminar, correr o baile, etc?)'),
+(140, 11, '¿Cuánto tiempo dedicas a la semana a tu la convivencia con tu red social (encontrarte con vecinos, amistades, familiares, o en clubes de pasatiempos, grupos deportivos o culturales, etc?)'),
+(141, 11, '¿Sabes en qué consiste el concepto mindfulness?'),
+(142, 11, '¿Has practicado mindfulness?'),
+(143, 11, '¿Cuántas horas a la semana?'),
+(144, 11, '¿En qué nivel de practicante te identificas?'),
+(145, 11, 'Un elemento fundamental para que las actividades de mindfulness tengan un impacto positivo en la vida es la constancia diaria de las prácticas, nos gustaría enviarte recordatorios para realizar tus prácticas. ¿En qué horario quieres que te envíe un recordatorio para hacer tus prácticas de SerenaMente IA?'),
+(146, 11, '¿Qué dificultades crees que puede haber en tu práctica de mindfulness?'),
+(147, 11, '¿Qué te gustaría lograr o mejorar con la práctica de mindfulness?');
