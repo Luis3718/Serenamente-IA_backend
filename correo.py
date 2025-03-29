@@ -47,18 +47,17 @@ def enviar_correo_verificacion(correo):
     mensaje["Subject"] = "Confirmación de Registro en la Plataforma de SerenaMente IA"
     mensaje.attach(MIMEText(
         f"""Estimado/a ¡Bienvenido/a a la plataforma de SerenaMente IA! 
-        Nos complace informarle que su registro ha sido exitoso. A continuación, encontrará los detalles para acceder a la plataforma: 
+Nos complace informarle que su registro ha sido exitoso. A continuación, encontrará los detalles para acceder a la plataforma: 
 
-        Verifica tu correo: {enlace}
+Verifica tu correo: {enlace}
 
-        Si tiene alguna pregunta o necesita asistencia adicional, no dude en 
-        ponerse en contacto con nuestro equipo de soporte a través de [correo 
-        de contacto].
+Si tiene alguna pregunta o necesita asistencia adicional, no dude en 
+ponerse en contacto con nuestro equipo de soporte a través de [correo de contacto].
 
-        Reciba un cordial saludo.
-        Atentamente
-        Equipo SerenaMente
-        FESI-UNAM IA""", "plain"))
+Reciba un cordial saludo.
+Atentamente
+Equipo SerenaMente
+FESI-UNAM IA""", "plain"))
 
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as servidor:
