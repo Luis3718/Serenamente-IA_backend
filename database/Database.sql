@@ -107,6 +107,62 @@ CREATE TABLE Resultados (
     FOREIGN KEY (ID_Formulario) REFERENCES Formularios(ID_Formulario)
 );
 
+-- Logica del protocolo
+CREATE TABLE Tratamientos (
+    ID_Tratamiento INTEGER PRIMARY KEY auto_increment,
+    Nivel VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE Habilidades (
+    ID_Habilidad INTEGER PRIMARY KEY auto_increment,
+    Nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Actividades (
+    ID_Actividad INTEGER PRIMARY KEY auto_increment,
+    ID_Habilidad INTEGER NOT NULL,
+    Nombre VARCHAR(100) NOT NULL,
+    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad)
+);
+
+CREATE TABLE Tratamiento_Habilidad_Actividad (
+    ID_Tratamiento INTEGER NOT NULL,
+    ID_Habilidad INTEGER NOT NULL,
+    ID_Actividad INTEGER NOT NULL,
+    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento),
+    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad),
+    FOREIGN KEY (ID_Actividad) REFERENCES Actividades (ID_Actividad)
+);
+
+CREATE TABLE Paciente_Tratamiento (
+    ID_Paciente INTEGER NOT NULL,
+    ID_Tratamiento INTEGER NOT NULL,
+    FechaInicio DATE NOT NULL,
+    PRIMARY KEY (ID_Paciente, ID_Tratamiento),
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
+    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento)
+);
+
+CREATE TABLE Paciente_Actividad (
+    ID_Paciente INTEGER NOT NULL,
+    ID_Actividad INTEGER NOT NULL,
+    FechaCompletada DATE,
+    Completada BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (ID_Paciente, ID_Actividad),
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
+    FOREIGN KEY (ID_Actividad) REFERENCES Actividades (ID_Actividad)
+);
+
+CREATE TABLE Paciente_Habilidad (
+    ID_Paciente INTEGER NOT NULL,
+    ID_Habilidad INTEGER NOT NULL,
+    FechaCompletada DATE,
+    Completada BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (ID_Paciente, ID_Habilidad),
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
+    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad)
+);
+
 -- Insertar datos en las tablas de catálogo
 INSERT INTO NivelesEstudios (ID_NivelEstudios, Descripcion) VALUES
 (1, 'No estudié'),
@@ -376,3 +432,34 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (145, 11, 'Un elemento fundamental para que las actividades de mindfulness tengan un impacto positivo en la vida es la constancia diaria de las prácticas, nos gustaría enviarte recordatorios para realizar tus prácticas. ¿En qué horario quieres que te envíe un recordatorio para hacer tus prácticas de SerenaMente IA?'),
 (146, 11, '¿Qué dificultades crees que puede haber en tu práctica de mindfulness?'),
 (147, 11, '¿Qué te gustaría lograr o mejorar con la práctica de mindfulness?');
+
+-- Crear los valores de los diferentes tratamientos
+INSERT INTO Tratamientos(ID_Tratamiento, Nivel) VALUES
+(1, "Leve"),
+(2, "Moderado"),
+(3, "Alto");
+
+-- Insertar datos de todas las habilidades
+INSERT INTO Habilidades (ID_Habilidad, Nombre) VALUES
+(1,"Comenzar a trabajar en mi"),
+(2,"Ser y estar"),
+(3,"De la Distracción a la Conciencia");
+
+-- Insertar los valores de las habilidades
+INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
+(1,1,"Qué es mindfulness y cómo puede ayudarme"),
+(2,1,"Ya sé que es mindfulness, ¿qué sigue?"),
+(3,1,"Respiración Consciente");
+
+-- Hacer las insercion de valores para los diferentes tipos de actividades por tratamiento
+INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
+-- Actividades que se mostraran de las habilidades 0 para cada tratamiento
+(1,1,1),
+(1,1,2),
+(1,1,3),
+(2,1,1),
+(2,1,2),
+(2,1,3),
+(3,1,1),
+(3,1,2),
+(3,1,3);
