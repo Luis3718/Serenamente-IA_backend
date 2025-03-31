@@ -90,3 +90,30 @@ class Resultado(ResultadoBase):
 
     class Config:
         from_attributes = True
+
+class TratamientoBase(BaseModel):
+    Nivel: str
+
+class HabilidadBase(BaseModel):
+    Nombre: str
+
+class ActividadBase(BaseModel):
+    ID_Habilidad: int
+    Nombre: str
+
+class PacienteTratamientoBase(BaseModel):
+    ID_Paciente: int
+    ID_Tratamiento: int
+    FechaInicio: date
+
+class PacienteActividadBase(BaseModel):
+    ID_Paciente: int
+    ID_Actividad: int
+    FechaCompletada: date
+    Completada: bool
+
+class PacienteHabilidadBase(BaseModel):
+    ID_Paciente: int
+    ID_Habilidad: int
+    FechaCompletada: date
+    Completada: bool

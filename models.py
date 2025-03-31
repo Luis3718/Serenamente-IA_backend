@@ -60,3 +60,39 @@ class Resultado(Base):
     ID_Formulario = Column(Integer, ForeignKey('Formularios.ID_Formulario'), nullable=False)
     Puntuacion = Column(Integer, nullable=False)
     Categoria = Column(String(50), nullable=False)  # Bajo, Medio, Alto
+
+class Tratamiento(Base):
+    __tablename__ = 'Tratamientos'
+    ID_Tratamiento = Column(Integer, primary_key=True, autoincrement=True)
+    Nivel = Column(String(20), nullable=False)
+
+class Habilidad(Base):
+    __tablename__ = 'Habilidades'
+    ID_Habilidad = Column(Integer, primary_key=True, autoincrement=True)
+    Nombre = Column(String(100), nullable=False)
+
+class Actividad(Base):
+    __tablename__ = 'Actividades'
+    ID_Actividad = Column(Integer, primary_key=True, autoincrement=True)
+    ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), nullable=False)
+    Nombre = Column(String(100), nullable=False)
+
+class Paciente_Tratamiento(Base):
+    __tablename__ = 'Paciente_Tratamiento'
+    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
+    ID_Tratamiento = Column(Integer, ForeignKey('Tratamientos.ID_Tratamiento'), primary_key=True)
+    FechaInicio = Column(Date, nullable=False)
+
+class Paciente_Actividad(Base):
+    __tablename__ = 'Paciente_Actividad'
+    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
+    ID_Actividad = Column(Integer, ForeignKey('Actividades.ID_Actividad'), primary_key=True)
+    FechaCompletada = Column(Date)
+    Completada = Column(Boolean, default=False)
+
+class Paciente_Habilidad(Base):
+    __tablename__ = 'Paciente_Habilidad'
+    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
+    ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), primary_key=True)
+    FechaCompletada = Column(Date)
+    Completada = Column(Boolean, default=False)
