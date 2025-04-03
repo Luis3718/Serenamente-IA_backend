@@ -163,6 +163,18 @@ CREATE TABLE Paciente_Habilidad (
     FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad)
 );
 
+CREATE TABLE ProgresoPaciente (
+    ID_Paciente INTEGER NOT NULL,
+    ID_Tratamiento INTEGER NOT NULL,
+    ID_Habilidad INTEGER,
+    ID_Actividad INTEGER,
+    PRIMARY KEY (ID_Paciente),
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
+    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento),
+    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad),
+    FOREIGN KEY (ID_Actividad) REFERENCES Actividades (ID_Actividad)
+);
+
 -- Insertar datos en las tablas de catálogo
 INSERT INTO NivelesEstudios (ID_NivelEstudios, Descripcion) VALUES
 (1, 'No estudié'),
@@ -457,6 +469,8 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (1,1,1),
 (1,1,2),
 (1,1,3),
+(1,2,1),
+(1,3,1),
 (2,1,1),
 (2,1,2),
 (2,1,3),

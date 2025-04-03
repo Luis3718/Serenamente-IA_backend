@@ -77,6 +77,12 @@ class Actividad(Base):
     ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), nullable=False)
     Nombre = Column(String(100), nullable=False)
 
+class Tratamiento_Habilidad_Actividad(Base):
+    __tablename__ = 'tratamiento_habilidad_actividad'
+    ID_Tratamiento = Column(Integer, ForeignKey('tratamientos.ID_Tratamiento'), primary_key=True)
+    ID_Habilidad = Column(Integer, ForeignKey('habilidades.ID_Habilidad'), primary_key=True)
+    ID_Actividad = Column(Integer, ForeignKey('actividades.ID_Actividad'), primary_key=True)
+
 class Paciente_Tratamiento(Base):
     __tablename__ = 'Paciente_Tratamiento'
     ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
@@ -96,3 +102,11 @@ class Paciente_Habilidad(Base):
     ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), primary_key=True)
     FechaCompletada = Column(Date)
     Completada = Column(Boolean, default=False)
+
+class ProgresoPaciente(Base):
+    __tablename__ = 'progreso_paciente'
+    ID_Paciente = Column(Integer, ForeignKey('pacientes.ID_Paciente'), primary_key=True)
+    ID_Tratamiento = Column(Integer, ForeignKey('tratamientos.ID_Tratamiento'), nullable=False)
+    ID_Habilidad = Column(Integer, ForeignKey('habilidades.ID_Habilidad'))
+    ID_Actividad = Column(Integer, ForeignKey('actividades.ID_Actividad'))
+    FechaInicio = Column(Date)

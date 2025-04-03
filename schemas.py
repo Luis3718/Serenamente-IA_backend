@@ -95,7 +95,11 @@ class TratamientoBase(BaseModel):
     Nivel: str
 
 class HabilidadBase(BaseModel):
+    ID_Habilidad: int
     Nombre: str
+
+    class Config:
+        orm_mode = True  # Usar from_attributes en Pydantic v2
 
 class ActividadBase(BaseModel):
     ID_Habilidad: int
@@ -117,3 +121,20 @@ class PacienteHabilidadBase(BaseModel):
     ID_Habilidad: int
     FechaCompletada: date
     Completada: bool
+
+class ProgresoPacienteBase(BaseModel):
+    ID_Paciente: int
+    ID_Tratamiento: int
+    ID_Habilidad: Optional[int]
+    ID_Actividad: Optional[int]
+    FechaInicio: Optional[date]
+
+class ProgresoPacienteCreate(ProgresoPacienteBase):
+    pass
+
+class ProgresoPacienteUpdate(ProgresoPacienteBase):
+    pass
+
+class ProgresoPacienteInDB(ProgresoPacienteBase):
+    class Config:
+        orm_mode = True
