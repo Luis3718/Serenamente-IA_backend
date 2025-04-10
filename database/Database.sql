@@ -168,6 +168,7 @@ CREATE TABLE ProgresoPaciente (
     ID_Tratamiento INTEGER NOT NULL,
     ID_Habilidad INTEGER,
     ID_Actividad INTEGER,
+    FechaInicio DATE,
     PRIMARY KEY (ID_Paciente),
     FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
     FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento),

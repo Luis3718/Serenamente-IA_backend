@@ -129,6 +129,18 @@ class ProgresoPacienteBase(BaseModel):
     ID_Actividad: Optional[int]
     FechaInicio: Optional[date]
 
+class ProgresoResponse(BaseModel):
+    ID_Paciente: int
+    ID_Tratamiento: int
+    ID_Habilidad: int
+    ID_Actividad: int
+    FechaInicio: date
+    Nombre_Habilidad: str
+    Nombre_Actividad: str
+
+    class Config:
+        orm_mode = True
+
 class ProgresoPacienteCreate(ProgresoPacienteBase):
     pass
 

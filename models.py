@@ -104,9 +104,9 @@ class Paciente_Habilidad(Base):
     Completada = Column(Boolean, default=False)
 
 class ProgresoPaciente(Base):
-    __tablename__ = 'progreso_paciente'
-    ID_Paciente = Column(Integer, ForeignKey('pacientes.ID_Paciente'), primary_key=True)
-    ID_Tratamiento = Column(Integer, ForeignKey('tratamientos.ID_Tratamiento'), nullable=False)
-    ID_Habilidad = Column(Integer, ForeignKey('habilidades.ID_Habilidad'))
-    ID_Actividad = Column(Integer, ForeignKey('actividades.ID_Actividad'))
+    __tablename__ = 'ProgresoPaciente'
+    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
+    ID_Tratamiento = Column(Integer, ForeignKey('Tratamientos.ID_Tratamiento'))
+    ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'))  # Asegúrate de que el nombre sea correcto
+    ID_Actividad = Column(Integer, ForeignKey('Actividades.ID_Actividad'))
     FechaInicio = Column(Date)
