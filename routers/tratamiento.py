@@ -215,7 +215,9 @@ def obtener_estado_habilidades(paciente_id: int, db: Session = Depends(get_db)):
     ).all()
     completadas_ids = [h[0] for h in completadas]
 
-    habilidades = db.query(Habilidad).join(Tratamiento_Habilidad_Actividad).filter(
+    habilidades = db.query(Habilidad).select_from(Tratamiento_Habilidad_Actividad).join(
+        Habilidad, Tratamiento_Habilidad_Actividad.ID_Habilidad == Habilidad.ID_Habilidad
+    ).filter(
         Tratamiento_Habilidad_Actividad.ID_Tratamiento == progreso.ID_Tratamiento
     ).distinct().order_by(Habilidad.ID_Habilidad).all()
 
