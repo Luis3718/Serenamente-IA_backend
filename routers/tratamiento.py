@@ -5,7 +5,7 @@ from typing import List
 from database import get_db
 from models import (
     Paciente, Tratamiento, Paciente_Tratamiento, Habilidad, 
-    Tratamiento_Habilidad_Actividad, Paciente_Habilidad, Actividad, ProgresoPaciente
+    Tratamiento_Habilidad_Actividad, Paciente_Habilidad, Paciente_Actividad, Actividad, ProgresoPaciente
 )
 from schemas import HabilidadBase, ActividadBase, ProgresoResponse
 import random
@@ -131,3 +131,105 @@ def get_progreso_paciente(paciente_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Progreso del paciente no encontrado")
 
     return progreso
+
+@router.post("/progreso/completar_actividad/{paciente_id}")
+def completar_actividad(paciente_id: int, db: Session = Depends(get_db)):
+    progreso = db.query(ProgresoPaciente).filter(ProgresoPaciente.ID_Paciente == paciente_id).first()
+    if not progreso:
+        raise HTTPException(status_code=404, detail="No se encontró el progreso del paciente")
+
+    # 1. Registrar actividad completada en histórico
+    historico = Paciente_Actividad(
+        ID_Paciente=paciente_id,
+        ID_Actividad=progreso.ID_Actividad,
+        Completada=True,
+        FechaCompletada=date.today()
+    )
+    db.add(historico)
+
+    # 2. Buscar la siguiente actividad
+    siguiente_actividad = db.query(Tratamiento_Habilidad_Actividad).filter(
+        Tratamiento_Habilidad_Actividad.ID_Tratamiento == progreso.ID_Tratamiento,
+        Tratamiento_Habilidad_Actividad.ID_Habilidad == progreso.ID_Habilidad,
+        Tratamiento_Habilidad_Actividad.ID_Actividad > progreso.ID_Actividad
+    ).order_by(Tratamiento_Habilidad_Actividad.ID_Actividad).first()
+
+    if siguiente_actividad:
+        # 3. Actualizar el progreso con la siguiente actividad
+        progreso.ID_Actividad = siguiente_actividad.ID_Actividad
+        db.commit()
+        return {"message": "Actividad completada. Avanzando a la siguiente actividad."}
+
+    # 4. No hay más actividades -> completar habilidad actual
+    db.add(Paciente_Habilidad(
+        ID_Paciente=paciente_id,
+        ID_Habilidad=progreso.ID_Habilidad,
+        Completada=True,
+        FechaCompletada=date.today()
+    ))
+
+    # 5. Buscar la siguiente habilidad
+    habilidades = db.query(Habilidad.ID_Habilidad).join(
+        Tratamiento_Habilidad_Actividad,
+        Tratamiento_Habilidad_Actividad.ID_Habilidad == Habilidad.ID_Habilidad
+    ).filter(
+        Tratamiento_Habilidad_Actividad.ID_Tratamiento == progreso.ID_Tratamiento
+    ).distinct().order_by(Habilidad.ID_Habilidad).all()
+
+    # Encuentra la siguiente habilidad con ID mayor a la actual
+    ids = [h[0] for h in habilidades]
+    try:
+        idx_actual = ids.index(progreso.ID_Habilidad)
+        id_siguiente = ids[idx_actual + 1]
+    except (ValueError, IndexError):
+        id_siguiente = None
+
+    if id_siguiente:
+        # Buscar la primera actividad de la siguiente habilidad
+        actividad_inicio = db.query(Tratamiento_Habilidad_Actividad).filter(
+            Tratamiento_Habilidad_Actividad.ID_Tratamiento == progreso.ID_Tratamiento,
+            Tratamiento_Habilidad_Actividad.ID_Habilidad == id_siguiente
+        ).order_by(Tratamiento_Habilidad_Actividad.ID_Actividad).first()
+
+        if not actividad_inicio:
+            raise HTTPException(status_code=400, detail="La siguiente habilidad no tiene actividades.")
+
+        progreso.ID_Habilidad = id_siguiente
+        progreso.ID_Actividad = actividad_inicio.ID_Actividad
+        db.commit()
+        return {"message": "Habilidad completada. Iniciando siguiente habilidad."}
+    
+    else:
+        db.commit()
+        return {"message": "Tratamiento completado. No hay más habilidades ni actividades por realizar."}
+    
+@router.get("/progreso/habilidades_estado/{paciente_id}")
+def obtener_estado_habilidades(paciente_id: int, db: Session = Depends(get_db)):
+    progreso = db.query(ProgresoPaciente).filter(ProgresoPaciente.ID_Paciente == paciente_id).first()
+    if not progreso:
+        raise HTTPException(status_code=404, detail="No se encontró progreso")
+
+    completadas = db.query(Paciente_Habilidad.ID_Habilidad).filter(
+        Paciente_Habilidad.ID_Paciente == paciente_id,
+        Paciente_Habilidad.Completada == True
+    ).all()
+    completadas_ids = [h[0] for h in completadas]
+
+    habilidades = db.query(Habilidad).join(Tratamiento_Habilidad_Actividad).filter(
+        Tratamiento_Habilidad_Actividad.ID_Tratamiento == progreso.ID_Tratamiento
+    ).distinct().order_by(Habilidad.ID_Habilidad).all()
+
+    resultado = []
+    for hab in habilidades:
+        estado = "pendiente"
+        if hab.ID_Habilidad == progreso.ID_Habilidad:
+            estado = "actual"
+        elif hab.ID_Habilidad in completadas_ids:
+            estado = "completada"
+        resultado.append({
+            "id": hab.ID_Habilidad,
+            "nombre": hab.Nombre,
+            "estado": estado
+        })
+
+    return resultado
