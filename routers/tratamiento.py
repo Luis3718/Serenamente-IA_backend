@@ -21,6 +21,12 @@ def asignar_tratamiento(paciente_id: int, db: Session = Depends(get_db)):
     if not paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
+    # Verificar si ya tiene un tratamiento asignado
+    tratamiento_existente = db.query(Paciente_Tratamiento).filter(Paciente_Tratamiento.ID_Paciente == paciente_id).first()
+    print(tratamiento_existente)
+    if tratamiento_existente:
+        raise HTTPException(status_code=400, detail="El paciente ya tiene un tratamiento asignado")
+
     # Asignar un ID de tratamiento aleatorio entre 1 y 3
     tratamiento_id = random.randint(1, 3)
 
@@ -71,19 +77,29 @@ def get_actividades_tratamiento_habilidad(id_tratamiento: int, id_habilidad: int
 
     return actividades
 
-@router.post("/asignar_habilidad_actividad/{paciente_id}/{tratamiento_id}")
-def asignar_habilidad_actividad(paciente_id: int, tratamiento_id: int, db: Session = Depends(get_db)):
+@router.post("/asignar_habilidad_actividad/{paciente_id}")
+def asignar_habilidad_actividad(paciente_id: int, db: Session = Depends(get_db)):
     # Verificar si el paciente existe
     paciente = db.query(Paciente).filter(Paciente.ID_Paciente == paciente_id).first()
     if not paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
+    # Obtener tratamiento asignado del paciente
+    tratamiento_asignado = db.query(Paciente_Tratamiento)\
+        .filter(Paciente_Tratamiento.ID_Paciente == paciente_id)\
+        .first()
+
+    if not tratamiento_asignado:
+        raise HTTPException(status_code=404, detail="El paciente no tiene tratamiento asignado")
+
+    tratamiento_id = tratamiento_asignado.ID_Tratamiento
+
     # Buscar la primera habilidad y actividad para el tratamiento especificado
-    th_actividad = db.query(Tratamiento_Habilidad_Actividad).\
-        join(Habilidad, Tratamiento_Habilidad_Actividad.ID_Habilidad == Habilidad.ID_Habilidad).\
-        join(Actividad, Tratamiento_Habilidad_Actividad.ID_Actividad == Actividad.ID_Actividad).\
-        filter(Tratamiento_Habilidad_Actividad.ID_Tratamiento == tratamiento_id).\
-        first()
+    th_actividad = db.query(Tratamiento_Habilidad_Actividad)\
+        .join(Habilidad, Tratamiento_Habilidad_Actividad.ID_Habilidad == Habilidad.ID_Habilidad)\
+        .join(Actividad, Tratamiento_Habilidad_Actividad.ID_Actividad == Actividad.ID_Actividad)\
+        .filter(Tratamiento_Habilidad_Actividad.ID_Tratamiento == tratamiento_id)\
+        .first()
 
     if not th_actividad:
         raise HTTPException(status_code=404, detail="No se encontraron habilidades y actividades para este tratamiento")
@@ -106,7 +122,11 @@ def asignar_habilidad_actividad(paciente_id: int, tratamiento_id: int, db: Sessi
         progreso.FechaInicio = date.today()
 
     db.commit()
-    return {"message": "Habilidad y actividad asignadas correctamente, progreso actualizado"}
+    return {
+        "message": "Habilidad y actividad asignadas correctamente, progreso actualizado",
+        "ID_Habilidad": th_actividad.ID_Habilidad,
+        "ID_Actividad": th_actividad.ID_Actividad
+    }
 
 @router.get("/progreso/{paciente_id}", response_model=ProgresoResponse)
 def get_progreso_paciente(paciente_id: int, db: Session = Depends(get_db)):

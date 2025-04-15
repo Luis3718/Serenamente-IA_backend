@@ -462,19 +462,27 @@ INSERT INTO Habilidades (ID_Habilidad, Nombre) VALUES
 INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 (1,1,"Qué es mindfulness y cómo puede ayudarme"),
 (2,1,"Ya sé que es mindfulness, ¿qué sigue?"),
-(3,1,"Respiración Consciente");
+(3,1,"Respiración Consciente"),
+(4,2,"Prueba 2_1"),
+(5,2,"Prueba 2_2"),
+(6,2,"Prueba 2_3"),
+(7,3,"Prueba 3_1");
 
--- Hacer las insercion de valores para los diferentes tipos de actividades por tratamiento
+-- Hacer las insercion de valores para el tratamiento 1
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (1,1,1),
 (1,1,2),
 (1,1,3),
-(1,2,1),
-(1,3,1),
+(1,2,4),
+(1,2,5),
+(1,3,7);
+
+-- Hacer las insercion de valores para el tratamiento 2
+INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
+-- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (2,1,1),
 (2,1,2),
-(2,1,3),
-(3,1,1),
-(3,1,2),
-(3,1,3);
+(2,2,4),
+(2,3,6),
+(3,1,1);
