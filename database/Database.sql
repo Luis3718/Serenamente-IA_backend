@@ -93,7 +93,7 @@ CREATE TABLE Respuestas (
     ID_Respuesta INTEGER PRIMARY KEY auto_increment,
     ID_Pregunta INTEGER NOT NULL,
     ID_Paciente INTEGER NOT NULL,
-    Respuesta TEXT NOT NULL,
+    Respuesta VARCHAR(200) NOT NULL,
     FOREIGN KEY (ID_Pregunta) REFERENCES Preguntas(ID_Pregunta),
     FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente)
 );
@@ -131,7 +131,7 @@ CREATE TABLE Respuestas_Actividad (
     ID_Actividad INT NOT NULL,
     Respuesta TEXT NOT NULL,
     Fecha_Registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ID_Paciente) REFERENCES Paciente(ID_Paciente),
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
     FOREIGN KEY (ID_Actividad) REFERENCES Actividades(ID_Actividad)
 );
 
@@ -486,7 +486,7 @@ INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (1,1,1),
-(1,1,2),
+-- (1,1,2),
 (1,1,3),
 (1,2,4),
 (1,2,5),
@@ -497,7 +497,7 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (2,1,1),
-(2,1,2),
+-- (2,1,2),
 (2,1,3),
 (2,2,4),
 (2,2,5),
@@ -506,11 +506,11 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (2,3,9),
 (2,3,10);
 
--- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 3
+-- Hacer las insercion de valores para el tratamiento 3 hasta la habilidad 3
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (3,1,1),
-(3,1,2),
+-- (3,1,2),
 (3,1,3),
 (3,2,4),
 (3,2,5),

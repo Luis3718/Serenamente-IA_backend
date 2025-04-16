@@ -84,8 +84,8 @@ class RespuestaActividad(Base):
     ID_Paciente = Column(Integer, ForeignKey("Paciente.ID_Paciente"), nullable=False)
     ID_Actividad = Column(Integer, ForeignKey("Actividades.ID_Actividad"), nullable=False)
     ID_Pregunta = Column(Integer, nullable=True)
-    Respuesta = Column(Text, nullable=False)
-    Fecha_Registro = Column(DateTime(timezone=True), server_default=func.now())
+    Respuesta = Column(String(200), nullable=False)
+    Fecha_Registro = Column(Date, nullable=False)
 
 class Tratamiento_Habilidad_Actividad(Base):
     __tablename__ = 'tratamiento_habilidad_actividad'
