@@ -125,6 +125,16 @@ CREATE TABLE Actividades (
     FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad)
 );
 
+CREATE TABLE Respuestas_Actividad (
+    ID_Respuesta INT PRIMARY KEY auto_increment,
+    ID_Paciente INT NOT NULL,
+    ID_Actividad INT NOT NULL,
+    Respuesta TEXT NOT NULL,
+    Fecha_Registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ID_Paciente) REFERENCES Paciente(ID_Paciente),
+    FOREIGN KEY (ID_Actividad) REFERENCES Actividades(ID_Actividad)
+);
+
 CREATE TABLE Tratamiento_Habilidad_Actividad (
     ID_Tratamiento INTEGER NOT NULL,
     ID_Habilidad INTEGER NOT NULL,
@@ -463,12 +473,16 @@ INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 (1,1,"Qué es mindfulness y cómo puede ayudarme"),
 (2,1,"Ya sé que es mindfulness, ¿qué sigue?"),
 (3,1,"Respiración Consciente"),
-(4,2,"Prueba 2_1"),
-(5,2,"Prueba 2_2"),
-(6,2,"Prueba 2_3"),
-(7,3,"Prueba 3_1");
+(4,2,"Práctica: Consciencia en mi respiración"),
+(5,2,"Práctica: Meditación de la montaña"),
+(6,2,"Práctica: Escaneo corporal"),
+(7,2,"Práctica: Yoga consciente"),
+(8,3,"Meditación para Ver"),
+(9,3,"Práctica de Aceptación y No Juicio"),
+(10,3,"Práctica Breve de Yoga"),
+(11,3,"Escaneo Corporal");
 
--- Hacer las insercion de valores para el tratamiento 1
+-- Hacer las insercion de valores para el tratamiento 1 hasta la habilidad 3
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (1,1,1),
@@ -476,13 +490,33 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (1,1,3),
 (1,2,4),
 (1,2,5),
-(1,3,7);
+(1,3,8),
+(1,3,9);
 
--- Hacer las insercion de valores para el tratamiento 2
+-- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 3
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (2,1,1),
 (2,1,2),
+(2,1,3),
 (2,2,4),
-(2,3,6),
-(3,1,1);
+(2,2,5),
+(2,2,6),
+(2,3,8),
+(2,3,9),
+(2,3,10);
+
+-- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 3
+INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
+-- Actividades que se mostraran de las habilidades 0 para cada tratamiento
+(3,1,1),
+(3,1,2),
+(3,1,3),
+(3,2,4),
+(3,2,5),
+(3,2,6),
+(3,2,7),
+(3,3,8),
+(3,3,9),
+(3,3,10),
+(3,3,11);
