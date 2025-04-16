@@ -77,6 +77,16 @@ class Actividad(Base):
     ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), nullable=False)
     Nombre = Column(String(100), nullable=False)
 
+class RespuestaActividad(Base):
+    __tablename__ = "Respuestas_Actividad"
+
+    ID_Respuesta = Column(Integer, primary_key=True, index=True)
+    ID_Paciente = Column(Integer, ForeignKey("Paciente.ID_Paciente"), nullable=False)
+    ID_Actividad = Column(Integer, ForeignKey("Actividades.ID_Actividad"), nullable=False)
+    ID_Pregunta = Column(Integer, nullable=True)
+    Respuesta = Column(Text, nullable=False)
+    Fecha_Registro = Column(DateTime(timezone=True), server_default=func.now())
+
 class Tratamiento_Habilidad_Actividad(Base):
     __tablename__ = 'tratamiento_habilidad_actividad'
     ID_Tratamiento = Column(Integer, ForeignKey('tratamientos.ID_Tratamiento'), primary_key=True)

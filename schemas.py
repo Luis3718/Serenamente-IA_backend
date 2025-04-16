@@ -105,6 +105,22 @@ class ActividadBase(BaseModel):
     ID_Habilidad: int
     Nombre: str
 
+class RespuestaActividadBase(BaseModel):
+    ID_Paciente: int
+    ID_Actividad: int
+    ID_Pregunta: Optional[int] = None
+    Respuesta: str
+
+class RespuestaActividadCreate(RespuestaActividadBase):
+    pass
+
+class RespuestaActividadOut(RespuestaActividadBase):
+    ID_Respuesta: int
+    Fecha_Registro: datetime
+
+    class Config:
+        orm_mode = True
+
 class PacienteTratamientoBase(BaseModel):
     ID_Paciente: int
     ID_Tratamiento: int
