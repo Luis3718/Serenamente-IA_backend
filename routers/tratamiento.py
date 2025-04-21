@@ -7,7 +7,7 @@ from models import (
     Paciente, Tratamiento, Paciente_Tratamiento, Habilidad, 
     Tratamiento_Habilidad_Actividad, Paciente_Habilidad, Paciente_Actividad, Actividad, ProgresoPaciente
 )
-from schemas import HabilidadBase, ActividadBase, ProgresoResponse
+from schemas import HabilidadBase, ActividadBase, ProgresoResponse, ActividadConID
 import random
 
 router = APIRouter(
@@ -65,17 +65,25 @@ def get_habilidades_tratamiento(id_tratamiento: int, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="No se encontraron habilidades para este tratamiento")
     return habilidades
 
-@router.get("/ruta_actividad/{id_tratamiento}/habilidad/{id_habilidad}", response_model=List[ActividadBase])
+@router.get("/ruta_actividad/{id_tratamiento}/habilidad/{id_habilidad}", response_model=List[ActividadConID])
 def get_actividades_tratamiento_habilidad(id_tratamiento: int, id_habilidad: int, db: Session = Depends(get_db)):
     actividades = db.query(Actividad).\
-    join(Tratamiento_Habilidad_Actividad, Tratamiento_Habilidad_Actividad.ID_Actividad == Actividad.ID_Actividad).\
-    filter(Tratamiento_Habilidad_Actividad.ID_Tratamiento == id_tratamiento,
-            Tratamiento_Habilidad_Actividad.ID_Habilidad == id_habilidad).all()
+        join(Tratamiento_Habilidad_Actividad, Tratamiento_Habilidad_Actividad.ID_Actividad == Actividad.ID_Actividad).\
+        filter(Tratamiento_Habilidad_Actividad.ID_Tratamiento == id_tratamiento,
+               Tratamiento_Habilidad_Actividad.ID_Habilidad == id_habilidad).all()
 
     if not actividades:
         raise HTTPException(status_code=404, detail="No se encontraron actividades para esta habilidad en este tratamiento")
 
     return actividades
+
+@router.get("/progreso/actividad_actual/{paciente_id}")
+def obtener_actividad_actual(paciente_id: int, db: Session = Depends(get_db)):
+    progreso = db.query(ProgresoPaciente).filter(ProgresoPaciente.ID_Paciente == paciente_id).first()
+    if not progreso:
+        raise HTTPException(status_code=404, detail="Progreso no encontrado")
+
+    return {"id_actividad_actual": progreso.ID_Actividad}
 
 @router.post("/asignar_habilidad_actividad/{paciente_id}")
 def asignar_habilidad_actividad(paciente_id: int, db: Session = Depends(get_db)):

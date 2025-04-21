@@ -105,6 +105,14 @@ class ActividadBase(BaseModel):
     ID_Habilidad: int
     Nombre: str
 
+class ActividadConID(BaseModel):
+    ID_Actividad: int
+    ID_Habilidad: int
+    Nombre: str
+
+    class Config:
+        orm_mode = True
+
 class RespuestaActividadBase(BaseModel):
     ID_Paciente: int
     ID_Actividad: int
