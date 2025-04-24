@@ -5,7 +5,8 @@ from typing import List
 from database import get_db
 from models import (
     Paciente, Tratamiento, Paciente_Tratamiento, Habilidad, 
-    Tratamiento_Habilidad_Actividad, Paciente_Habilidad, Paciente_Actividad, Actividad, ProgresoPaciente
+    Tratamiento_Habilidad_Actividad, Paciente_Habilidad, Paciente_Actividad, Actividad, ProgresoPaciente, 
+    RespuestaActividad
 )
 from schemas import HabilidadBase, ActividadBase, ProgresoResponse, ActividadConID, RespuestaEntrada
 import random
