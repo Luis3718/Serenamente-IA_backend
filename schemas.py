@@ -113,21 +113,11 @@ class ActividadConID(BaseModel):
     class Config:
         orm_mode = True
 
-class RespuestaActividadBase(BaseModel):
-    ID_Paciente: int
-    ID_Actividad: int
+class RespuestaEntrada(BaseModel):
     ID_Pregunta: Optional[int] = None
+    ID_Actividad: int
+    ID_Paciente: int
     Respuesta: str
-
-class RespuestaActividadCreate(RespuestaActividadBase):
-    pass
-
-class RespuestaActividadOut(RespuestaActividadBase):
-    ID_Respuesta: int
-    Fecha_Registro: datetime
-
-    class Config:
-        orm_mode = True
 
 class PacienteTratamientoBase(BaseModel):
     ID_Paciente: int

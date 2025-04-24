@@ -127,6 +127,7 @@ CREATE TABLE Actividades (
 
 CREATE TABLE Respuestas_Actividad (
     ID_Respuesta INT PRIMARY KEY auto_increment,
+    ID_Pregunta INT,
     ID_Paciente INT NOT NULL,
     ID_Actividad INT NOT NULL,
     Respuesta TEXT NOT NULL,
@@ -486,7 +487,7 @@ INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (1,1,1),
--- (1,1,2),
+(1,1,2),
 (1,1,3),
 (1,2,4),
 (1,2,5),
@@ -497,7 +498,7 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (2,1,1),
--- (2,1,2),
+(2,1,2),
 (2,1,3),
 (2,2,4),
 (2,2,5),
@@ -510,7 +511,7 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (3,1,1),
--- (3,1,2),
+(3,1,2),
 (3,1,3),
 (3,2,4),
 (3,2,5),

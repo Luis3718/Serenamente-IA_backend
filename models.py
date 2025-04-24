@@ -81,9 +81,9 @@ class RespuestaActividad(Base):
     __tablename__ = "Respuestas_Actividad"
 
     ID_Respuesta = Column(Integer, primary_key=True, index=True)
+    ID_Pregunta = Column(Integer, nullable=True)
     ID_Paciente = Column(Integer, ForeignKey("Paciente.ID_Paciente"), nullable=False)
     ID_Actividad = Column(Integer, ForeignKey("Actividades.ID_Actividad"), nullable=False)
-    ID_Pregunta = Column(Integer, nullable=True)
     Respuesta = Column(String(200), nullable=False)
     Fecha_Registro = Column(Date, nullable=False)
 

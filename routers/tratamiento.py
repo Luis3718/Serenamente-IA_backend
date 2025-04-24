@@ -7,7 +7,7 @@ from models import (
     Paciente, Tratamiento, Paciente_Tratamiento, Habilidad, 
     Tratamiento_Habilidad_Actividad, Paciente_Habilidad, Paciente_Actividad, Actividad, ProgresoPaciente
 )
-from schemas import HabilidadBase, ActividadBase, ProgresoResponse, ActividadConID
+from schemas import HabilidadBase, ActividadBase, ProgresoResponse, ActividadConID, RespuestaEntrada
 import random
 
 router = APIRouter(
@@ -230,7 +230,17 @@ def completar_actividad(paciente_id: int, db: Session = Depends(get_db)):
     else:
         db.commit()
         return {"message": "Tratamiento completado. No hay más habilidades ni actividades por realizar."}
-    
+
+@router.get("/actividad/completada/{paciente_id}/{actividad_id}")
+def actividad_completada(paciente_id: int, actividad_id: int, db: Session = Depends(get_db)):
+    actividad = db.query(Paciente_Actividad).filter(
+        Paciente_Actividad.ID_Paciente == paciente_id,
+        Paciente_Actividad.ID_Actividad == actividad_id,
+        Paciente_Actividad.Completada == True
+    ).first()
+
+    return {"completada": bool(actividad)}
+
 @router.get("/progreso/habilidades_estado/{paciente_id}")
 def obtener_estado_habilidades(paciente_id: int, db: Session = Depends(get_db)):
     progreso = db.query(ProgresoPaciente).filter(ProgresoPaciente.ID_Paciente == paciente_id).first()
@@ -263,3 +273,17 @@ def obtener_estado_habilidades(paciente_id: int, db: Session = Depends(get_db)):
         })
 
     return resultado
+
+@router.post("/respuestas/guardar")
+def guardar_respuestas(respuestas: List[RespuestaEntrada], db: Session = Depends(get_db)):
+    for r in respuestas:
+        nueva = RespuestaActividad(
+            ID_Pregunta=r.ID_Pregunta,
+            ID_Actividad=r.ID_Actividad,
+            ID_Paciente=r.ID_Paciente,
+            Respuesta=r.Respuesta
+        )
+        db.add(nueva)
+
+    db.commit()
+    return {"message": "Respuestas guardadas correctamente"}
