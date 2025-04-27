@@ -467,7 +467,11 @@ INSERT INTO Tratamientos(ID_Tratamiento, Nivel) VALUES
 INSERT INTO Habilidades (ID_Habilidad, Nombre) VALUES
 (1,"Comenzar a trabajar en mi"),
 (2,"Ser y estar"),
-(3,"De la Distracción a la Conciencia");
+(3,"De la Distracción a la Conciencia"),
+(4,"El poder de estar presente"),
+(5,"Re-Conocer el Estrés"),
+(6,"Comunicación que Conecta"),
+(7,"Cuidarte es volver a ti");
 
 -- Insertar los valores de las habilidades
 INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
@@ -481,9 +485,25 @@ INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 (8,3,"Meditación para Ver"),
 (9,3,"Práctica de Aceptación y No Juicio"),
 (10,3,"Práctica Breve de Yoga"),
-(11,3,"Escaneo Corporal");
+(11,3,"Escaneo Corporal"),
+(12,4,"Meditación sentada"),
+(13,4,"Meditación caminando"),
+(14,4,"Práctica Breve de Yoga"),
+(15,4,"Introducción al escaneo"),
+(16,5,"Entendiendo la Rueda de la Consciencia"),
+(17,5,"Practicando la Rueda de la Consciencia"),
+(18,5,"Práctica Breve de Yoga"),
+(19,5,"Atender el conflicto interno"),
+(20,6,"Tejiendo Conexiones Conscientes"),
+(21,6,"Pausa y Elige tu Respuesta"),
+(22,6,"La Montaña Interior en tus Vínculos"),
+(23,6,"Presencia Consciente en tus Conversaciones"),
+(24,7,"Actividades que Nutren"),
+(25,7,"Presencia Sostenida en la Vida Real"),
+(26,7,"Respiración Consciente"),
+(27,7,"Meditación de la Montaña");
 
--- Hacer las insercion de valores para el tratamiento 1 hasta la habilidad 3
+-- Hacer las insercion de valores para el tratamiento 1 hasta la habilidad 7
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (1,1,1),
@@ -492,9 +512,17 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (1,2,4),
 (1,2,5),
 (1,3,8),
-(1,3,9);
+(1,3,9),
+(1,4,12),
+(1,4,13),
+(1,5,16),
+(1,5,17),
+(1,6,20),
+(1,6,21),
+(1,7,24),
+(1,7,25);
 
--- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 3
+-- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 7
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (2,1,1),
@@ -505,9 +533,21 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (2,2,6),
 (2,3,8),
 (2,3,9),
-(2,3,10);
+(2,3,10),
+(2,4,12),
+(2,4,13),
+(2,4,14),
+(2,5,16),
+(2,5,17),
+(2,5,18),
+(2,6,20),
+(2,6,21),
+(2,6,22),
+(2,7,24),
+(2,7,25),
+(2,7,26);
 
--- Hacer las insercion de valores para el tratamiento 3 hasta la habilidad 3
+-- Hacer las insercion de valores para el tratamiento 3 hasta la habilidad 7
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (3,1,1),
@@ -520,4 +560,20 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (3,3,8),
 (3,3,9),
 (3,3,10),
-(3,3,11);
+(3,3,11),
+(3,4,12),
+(3,4,13),
+(3,4,14),
+(3,4,15),
+(3,5,16),
+(3,5,17),
+(3,5,18),
+(3,5,19),
+(3,6,20),
+(3,6,21),
+(3,6,22),
+(3,6,23),
+(3,7,24),
+(3,7,25),
+(3,7,26),
+(3,7,27);

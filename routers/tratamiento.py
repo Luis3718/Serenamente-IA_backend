@@ -29,7 +29,8 @@ def asignar_tratamiento(paciente_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="El paciente ya tiene un tratamiento asignado")
 
     # Asignar un ID de tratamiento aleatorio entre 1 y 3
-    tratamiento_id = random.randint(1, 3)
+    #tratamiento_id = random.randint(3, 3)
+    tratamiento_id = 3
 
     # Crear una instancia de Paciente_Tratamiento
     nuevo_tratamiento = Paciente_Tratamiento(

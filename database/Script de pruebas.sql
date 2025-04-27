@@ -17,7 +17,7 @@ SELECT
 FROM 
     Respuestas_Actividad
 WHERE 
-    ID_Actividad = 3; -- Cambia el número por el ID de la actividad que quieras consultar
+    ID_Actividad = 11; -- Cambia el número por el ID de la actividad que quieras consultar
 
 
 -- drop database  serenamentedb;	
