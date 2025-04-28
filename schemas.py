@@ -36,6 +36,11 @@ class Paciente(PacienteBase):
     class Config:
         from_attributes = True  # Esto habilita la conversión desde modelos de SQLAlchemy
 
+class PerfilUpdate(BaseModel):
+    Nombre: str = None
+    Apellidos: str = None
+    Celular: str = None
+    
 class FormularioBase(BaseModel):
     ID_Paciente: int
     ID_TipoFormulario: int

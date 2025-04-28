@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Paciente
-from schemas import PacienteCreate, Paciente
+from schemas import PacienteCreate, Paciente, PerfilUpdate
 
 router = APIRouter(
     prefix="/pacientes",
@@ -81,3 +81,33 @@ def salir_tratamiento(paciente_id: int, db: Session = Depends(get_db)):
     paciente.EsApto = False
     db.commit()
     return {"message": "El paciente ha salido del tratamiento exitosamente"}
+
+@router.get("/perfil/{paciente_id}")
+def obtener_perfil_paciente(paciente_id: int, db: Session = Depends(get_db)):
+    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+    return {
+        "Nombre": paciente.Nombre,
+        "Apellidos": paciente.Apellidos,
+        "Correo": paciente.Correo,
+        "Celular": paciente.Celular
+    }
+
+@router.put("/perfil/{paciente_id}")
+def actualizar_perfil_paciente(paciente_id: int, perfil_data: PerfilUpdate, db: Session = Depends(get_db)):
+    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+    if perfil_data.Nombre:
+        paciente.Nombre = perfil_data.Nombre
+    if perfil_data.Apellidos:
+        paciente.Apellidos = perfil_data.Apellidos
+    if perfil_data.Celular:
+        paciente.Celular = perfil_data.Celular
+
+    db.commit()
+    db.refresh(paciente)
+    return {"message": "Perfil actualizado exitosamente"}
