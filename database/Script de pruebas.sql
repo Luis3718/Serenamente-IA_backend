@@ -17,7 +17,13 @@ SELECT
 FROM 
     Respuestas_Actividad
 WHERE 
-    ID_Actividad = 11; -- Cambia el número por el ID de la actividad que quieras consultar
+    ID_Actividad = 26; -- Cambia el número por el ID de la actividad que quieras consultar
+
+SELECT *
+FROM Paciente_Actividad
+WHERE ID_Paciente = 1
+AND Completada = 1
+ORDER BY FechaCompletada ASC;
 
 
 -- drop database  serenamentedb;	

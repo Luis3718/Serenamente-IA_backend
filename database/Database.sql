@@ -471,7 +471,9 @@ INSERT INTO Habilidades (ID_Habilidad, Nombre) VALUES
 (4,"El poder de estar presente"),
 (5,"Re-Conocer el Estrés"),
 (6,"Comunicación que Conecta"),
-(7,"Cuidarte es volver a ti");
+(7,"Cuidarte es volver a ti"),
+(8,"Final del Tratamiento");
+
 
 -- Insertar los valores de las habilidades
 INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
@@ -501,7 +503,8 @@ INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 (24,7,"Actividades que Nutren"),
 (25,7,"Presencia Sostenida en la Vida Real"),
 (26,7,"Respiración Consciente"),
-(27,7,"Meditación de la Montaña");
+(27,7,"Meditación de la Montaña"),
+(28,8,"Final del Tratamiento");
 
 -- Hacer las insercion de valores para el tratamiento 1 hasta la habilidad 7
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
@@ -520,7 +523,9 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (1,6,20),
 (1,6,21),
 (1,7,24),
-(1,7,25);
+(1,7,25),
+(1,8,28);
+
 
 -- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 7
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
@@ -545,7 +550,8 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (2,6,22),
 (2,7,24),
 (2,7,25),
-(2,7,26);
+(2,7,26),
+(2,8,28);
 
 -- Hacer las insercion de valores para el tratamiento 3 hasta la habilidad 7
 INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
@@ -576,4 +582,5 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (3,7,24),
 (3,7,25),
 (3,7,26),
-(3,7,27);
+(3,7,27),
+(3,8,28);

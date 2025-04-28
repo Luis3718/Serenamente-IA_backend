@@ -71,3 +71,13 @@ def obtener_paciente(paciente_id: int, db: Session = Depends(get_db)):
     if not paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
     return paciente
+
+@router.get("/{paciente_id}", response_model=schemas.Paciente)
+def salir_tratamiento(paciente_id: int, db: Session = Depends(get_db)):
+    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+    paciente.EsApto = False
+    db.commit()
+    return {"message": "El paciente ha salido del tratamiento exitosamente"}
