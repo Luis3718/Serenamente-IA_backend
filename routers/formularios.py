@@ -45,17 +45,24 @@ def almacenar_respuestas_y_Resultado(data: dict, db: Session = Depends(get_db)):
 
 @router.get("/categorias/{id_paciente}")
 def obtener_categorias(id_paciente: int, db: Session = Depends(get_db)):
-    # Definir los IDs de los formularios que quieres consultar
-    ids_formulario = [1, 2, 4, 5]
-    
-    # Realizar la consulta para obtener las categorías basadas en los IDs de formulario y el ID del paciente
-    resultados = db.query(Resultado)\
+    # IDs de tipos de formulario que quieres consultar (no IDs autoincrementales de la tabla Formularios)
+    ids_tipo_formulario = [1, 2, 4, 5]  # ejemplo: Ansiedad, Depresión, Bienestar, Estrés
+
+    resultados = db.query(Resultado, Formulario)\
         .join(Formulario, Formulario.ID_Formulario == Resultado.ID_Formulario)\
-        .filter(Resultado.ID_Formulario.in_(ids_formulario), Formulario.ID_Paciente == id_paciente)\
+        .filter(Formulario.ID_Paciente == id_paciente)\
+        .filter(Formulario.ID_TipoFormulario.in_(ids_tipo_formulario))\
         .all()
-    
-    # Extraer y devolver las categorías
-    categorias = [{"ID_Formulario": resultado.ID_Formulario, "Categoria": resultado.Categoria} for resultado in resultados]
+
+    categorias = [
+        {
+            "ID_Formulario": formulario.ID_Formulario,
+            "ID_TipoFormulario": formulario.ID_TipoFormulario,
+            "Categoria": resultado.Categoria
+        }
+        for resultado, formulario in resultados
+    ]
+
     if not categorias:
         raise HTTPException(status_code=404, detail="Resultados no encontrados para el paciente especificado")
 
