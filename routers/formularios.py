@@ -140,3 +140,41 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
         return {"status": "Apto", "message": "El paciente es apto y el formulario ha sido marcado como contestado."}
     else:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+
+TIPOS_FORMULARIO = {
+    "ansiedad": 1,
+    "depresion": 2,
+    "estres": 5,
+    "bienestar": 4,
+    "mindfulness": 6
+}
+
+@router.get("/paciente/{id_paciente}/puntajes")
+def obtener_puntajes(id_paciente: int, db: Session = Depends(get_db)):
+    puntajes = {}
+    for nombre, tipo in TIPOS_FORMULARIO.items():
+        formulario = (
+            db.query(Formulario)
+            .filter(Formulario.ID_Paciente == id_paciente)
+            .filter(Formulario.ID_TipoFormulario == tipo)
+            .order_by(Formulario.ID_Formulario.desc())
+            .first()
+        )
+        if formulario:
+            resultado = (
+                db.query(Resultado)
+                .filter(Resultado.ID_Formulario == formulario.ID_Formulario)
+                .first()
+            )
+            if resultado:
+                puntajes[nombre] = resultado.Puntuacion
+            else:
+                puntajes[nombre] = None
+        else:
+            puntajes[nombre] = None
+
+    if not any(v is not None for v in puntajes.values()):
+        raise HTTPException(status_code=404, detail="No se encontraron formularios del paciente.")
+
+    return {"id_paciente": id_paciente, "puntajes": puntajes}
