@@ -36,6 +36,11 @@ CREATE TABLE TiposFormulario (
     NombreFormulario VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE TipoENTs (
+	ID_TipoENT INTEGER PRIMARY KEY auto_increment,
+    NombreENT VARCHAR(255) NOT NULL
+);
+
 -- Tabla para registrar usuarios/pacientes
 CREATE TABLE Pacientes (
     ID_Paciente INTEGER PRIMARY KEY auto_increment,
@@ -52,6 +57,7 @@ CREATE TABLE Pacientes (
     ID_Residencia INTEGER NOT NULL,
     ID_EstadoCivil INTEGER NOT NULL,
     EnTratamiento VARCHAR(20) NOT NULL,
+    ID_TipoENT INTEGER NOT NULL,
     TomaMedicamentos VARCHAR(255),
     NombreMedicacion VARCHAR(255),
     AvisoPrivacidad BOOLEAN NOT NULL,
@@ -67,7 +73,8 @@ CREATE TABLE Pacientes (
     FOREIGN KEY (ID_Residencia) REFERENCES Residencias(ID_Residencia),
     FOREIGN KEY (ID_EstadoCivil) REFERENCES EstadosCiviles(ID_EstadoCivil),
     FOREIGN KEY (Sexo) REFERENCES SexoCatalogo(Descripcion),
-    FOREIGN KEY (EnTratamiento) REFERENCES TratamientoCatalogo(Descripcion)
+    FOREIGN KEY (EnTratamiento) REFERENCES TratamientoCatalogo(Descripcion),
+    FOREIGN KEY (ID_TipoENT) REFERENCES TipoENTs(ID_TipoENT)
 );
 
 -- Tabla de formularios
@@ -262,6 +269,14 @@ INSERT INTO TratamientoCatalogo (Descripcion) VALUES
 ('psicológico'),
 ('psiquiátrico'),
 ('ambos');
+
+INSERT INTO TipoENTs (NombreENT) VALUES
+('Enfermedades cardiovasculares'),
+('Diabetes'),
+('Cáncer'),
+('Enfermedades renales'),
+('Enfermedad respiratorias crónicas'),
+('Ninguno');
 
 -- Insertar los formularios iniciales en el catálogo
 INSERT INTO TiposFormulario (NombreFormulario) VALUES

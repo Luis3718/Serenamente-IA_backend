@@ -15,6 +15,7 @@ class PacienteBase(BaseModel):
     ID_Residencia: int
     ID_EstadoCivil: int
     EnTratamiento: str
+    ID_TipoENT: int
     TomaMedicamentos: Optional[str] = None
     NombreMedicacion: Optional[str] = None
     AvisoPrivacidad: bool

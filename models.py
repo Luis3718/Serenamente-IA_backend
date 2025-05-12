@@ -19,6 +19,7 @@ class Paciente(Base):
     ID_Residencia = Column(Integer, nullable=False)
     ID_EstadoCivil = Column(Integer, nullable=False)
     EnTratamiento = Column(String(20), nullable=False)
+    ID_TipoENT = Column(String(20), nullable=False)
     TomaMedicamentos = Column(String(255))
     NombreMedicacion = Column(String(255))
     AvisoPrivacidad = Column(Boolean, nullable=False)

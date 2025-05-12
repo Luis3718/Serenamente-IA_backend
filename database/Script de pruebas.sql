@@ -25,5 +25,4 @@ WHERE ID_Paciente = 1
 AND Completada = 1
 ORDER BY FechaCompletada ASC;
 
-
 -- drop database  serenamentedb;	

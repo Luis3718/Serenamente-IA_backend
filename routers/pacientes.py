@@ -49,11 +49,12 @@ def crear_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_d
         ID_Residencia=paciente.ID_Residencia,
         ID_EstadoCivil=paciente.ID_EstadoCivil,
         EnTratamiento=paciente.EnTratamiento,
+        ID_TipoENT=paciente.ID_TipoENT,
         TomaMedicamentos=paciente.TomaMedicamentos,
         NombreMedicacion=paciente.NombreMedicacion,
         AvisoPrivacidad=paciente.AvisoPrivacidad,
         CartaConsentimiento=paciente.CartaConsentimiento,
-        EsApto=es_apto,  # Almacenar si es apto o no
+        EsApto=es_apto,  
     )
     db.add(nuevo_paciente)
     db.commit()
