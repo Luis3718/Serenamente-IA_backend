@@ -150,9 +150,12 @@ TIPOS_FORMULARIO = {
     "mindfulness": 6
 }
 
-@router.get("/paciente/{id_paciente}/puntajes")
-def obtener_puntajes(id_paciente: int, db: Session = Depends(get_db)):
+PREGUNTAS_SUICIDAS_IDS = [43, 44, 45, 46, 47, 48]
+
+@router.get("/paciente/{id_paciente}/datos_expertos")
+def obtener_datos_para_sistema_experto(id_paciente: int, db: Session = Depends(get_db)):
     puntajes = {}
+    # 1. Obtener puntajes por tipo de formulario
     for nombre, tipo in TIPOS_FORMULARIO.items():
         formulario = (
             db.query(Formulario)
@@ -167,14 +170,39 @@ def obtener_puntajes(id_paciente: int, db: Session = Depends(get_db)):
                 .filter(Resultado.ID_Formulario == formulario.ID_Formulario)
                 .first()
             )
-            if resultado:
-                puntajes[nombre] = resultado.Puntuacion
-            else:
-                puntajes[nombre] = None
+            puntajes[nombre] = resultado.Puntuacion if resultado else None
         else:
             puntajes[nombre] = None
 
-    if not any(v is not None for v in puntajes.values()):
-        raise HTTPException(status_code=404, detail="No se encontraron formularios del paciente.")
+    # 2. Obtener respuestas suicidas
+    respuestas_suicidas = []
+    for pregunta_id in PREGUNTAS_SUICIDAS_IDS:
+        respuesta = (
+            db.query(Respuesta)
+            .filter(Respuesta.ID_Paciente == id_paciente)
+            .filter(Respuesta.ID_Pregunta == pregunta_id)
+            .order_by(Respuesta.ID_Respuesta.desc())
+            .first()
+        )
+        if respuesta:
+            respuestas_suicidas.append(respuesta.Respuesta.lower())
+        else:
+            respuestas_suicidas.append("no")  # valor por defecto si no hay respuesta
 
-    return {"id_paciente": id_paciente, "puntajes": puntajes}
+    # 3. Determinar ENT
+    paciente = db.query(Paciente).filter(Paciente.ID_Paciente == id_paciente).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado.")
+
+    ent = "no" if paciente.ID_TipoENT == 6 else "si"
+
+    return {
+        "id_paciente": id_paciente,
+        "ansiedad": puntajes["ansiedad"],
+        "depresion": puntajes["depresion"],
+        "estres": puntajes["estres"],
+        "bienestar": puntajes["bienestar"],
+        "mindfulness": puntajes["mindfulness"],
+        "suicida": respuestas_suicidas,
+        "ent": ent
+    }

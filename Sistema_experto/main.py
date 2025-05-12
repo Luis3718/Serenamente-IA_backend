@@ -1,38 +1,36 @@
+import requests
 from reglas.inferencia import evaluar_paciente
 
-def solicitar_datos():
-    ansiedad = int(input("Ansiedad (0-63): "))
-    depresion = int(input("Depresión (0-63): "))
-    estres = int(input("Estrés (0-56): "))
-    bienestar = int(input("Bienestar (0-100): "))
-    mindfulness = float(input("Mindfulness (0.0-10.0): "))
-    suicida = [input(f"Pregunta {i+1} (si/no): ").lower() for i in range(6)]
-    ent = input("¿Tiene ENTs? (si/no): ").lower()
-
-    return {
-        "ansiedad": ansiedad,
-        "depresion": depresion,
-        "estres": estres,
-        "bienestar": bienestar,
-        "mindfulness": mindfulness,
-        "suicida": suicida,
-        "ent": ent
-    }
+def obtener_datos_desde_api(id_paciente):
+    try:
+        url = f"http://localhost:8002/formularios/paciente/{id_paciente}/datos_expertos"
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print("❌ Error al obtener datos del paciente:", e)
+        return None
 
 if __name__ == "__main__":
-    datos = solicitar_datos()
-    resultado = evaluar_paciente(datos)
+    id_paciente = int(input("🔍 Ingrese el ID del paciente: "))
+    datos = obtener_datos_desde_api(id_paciente)
 
-    print("\n--- RESULTADO ---")
-    if resultado.get("Canalizado"):
-        print("PACIENTE CANALIZADO:")
-        print(f"Motivo: {resultado['razon']}")
+    if not datos:
+        print("No se pudo recuperar la información del paciente.")
     else:
-        print(f"Nivel de intervención: {resultado['nivel_intervencion']}")
-        print(f"Subcategoría: {resultado['subcategoria']}")
-        print(f"Ansiedad: {resultado['ansiedad_escala']}, Depresión: {resultado['depresion_escala']}")
-        print(f"Estrés: {resultado['estres_escala']}, Bienestar: {resultado['bienestar_escala']}")
+        resultado = evaluar_paciente(datos)
 
-    print("\n--- LOG DE DECISIONES ---")
-    for linea in resultado["log"]:
-        print(" -", linea)
+        print("\n--- RESULTADO ---")
+        if resultado.get("Canalizado"):
+            print("🚨 PACIENTE CANALIZADO:")
+            print(f"Motivo: {resultado['razon']}")
+        else:
+            print("✅ Evaluación completada:")
+            print(f"Nivel de intervención: {resultado['nivel_intervencion']}")
+            print(f"Subcategoría: {resultado['subcategoria']}")
+            print(f"Ansiedad: {resultado['ansiedad_escala']}, Depresión: {resultado['depresion_escala']}")
+            print(f"Estrés: {resultado['estres_escala']}, Bienestar: {resultado['bienestar_escala']}")
+
+        print("\n--- LOG DE DECISIONES ---")
+        for linea in resultado["log"]:
+            print(" -", linea)
