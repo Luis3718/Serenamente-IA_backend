@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Boolean, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Text, DateTime, Boolean, TIMESTAMP, ForeignKey
 from sqlalchemy.sql import func
 from database import Base
 
@@ -61,6 +61,15 @@ class Resultado(Base):
     ID_Formulario = Column(Integer, ForeignKey('Formularios.ID_Formulario'), nullable=False)
     Puntuacion = Column(Integer, nullable=False)
     Categoria = Column(String(50), nullable=False)  # Bajo, Medio, Alto
+
+class AsignacionSistemaExperto(Base):
+    __tablename__ = "AsignacionesSistemaExperto"
+
+    ID_Asignacion = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    ID_Paciente = Column(Integer, ForeignKey("Pacientes.ID_Paciente"), nullable=False)
+    ID_Tratamiento = Column(Integer, ForeignKey("Tratamientos.ID_Tratamiento"), nullable=False)
+    Log = Column(Text, nullable=False)
+    FechaEvaluacion = Column(DateTime, default=func.now())
 
 class Tratamiento(Base):
     __tablename__ = 'Tratamientos'

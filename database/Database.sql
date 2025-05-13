@@ -110,11 +110,20 @@ CREATE TABLE Resultados (
     ID_Resultado INTEGER PRIMARY KEY auto_increment,
     ID_Formulario INTEGER NOT NULL,
     Puntuacion INTEGER NOT NULL,
-    Categoria VARCHAR(50) NOT NULL, -- Bajo, Medio, Alto
+    Categoria VARCHAR(50) NOT NULL, 
     FOREIGN KEY (ID_Formulario) REFERENCES Formularios(ID_Formulario)
 );
 
--- Logica del protocolo
+CREATE TABLE AsignacionesSistemaExperto (
+    ID_Evaluacion INTEGER PRIMARY KEY auto_increment,
+    ID_Paciente INTEGER NOT NULL,
+    ID_Tratamiento INTEGER NOT NULL,
+    Log TEXT NOT NULL,
+    FechaEvaluacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
+    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos(ID_Tratamiento)
+);
+
 CREATE TABLE Tratamientos (
     ID_Tratamiento INTEGER PRIMARY KEY auto_increment,
     Nivel VARCHAR(20) NOT NULL

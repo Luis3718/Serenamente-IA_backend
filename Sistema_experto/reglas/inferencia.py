@@ -1,10 +1,10 @@
-from reglas.escalas import (
+from Sistema_experto.reglas.escalas import (
     escala_ansiedad,
     escala_depresion,
     escala_estres,
     escala_bienestar
 )
-from reglas.filtros import *
+from Sistema_experto.reglas.filtros import *
 
 def evaluar_paciente(datos):
     log = []

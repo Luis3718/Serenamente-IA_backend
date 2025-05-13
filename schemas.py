@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 class PacienteBase(BaseModel):
     Nombre: str
@@ -96,6 +96,21 @@ class Resultado(ResultadoBase):
 
     class Config:
         from_attributes = True
+
+class AsignacionCreate(BaseModel):
+    ID_Paciente: int
+    ID_Tratamiento: int
+    Log: List[str]  # lista de pasos aplicados
+
+class AsignacionOut(BaseModel):
+    ID_Asignacion: int
+    ID_Paciente: int
+    ID_Tratamiento: int
+    Log: str
+    FechaEvaluacion: datetime
+
+    class Config:
+        orm_mode = True
 
 class TratamientoBase(BaseModel):
     Nivel: str

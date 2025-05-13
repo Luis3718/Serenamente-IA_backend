@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from schemas import RespuestaCreate, ResultadoCreate
-from models import Formulario, Respuesta, Resultado, Paciente
+from Sistema_experto.reglas.inferencia import evaluar_paciente
+from models import Formulario, Respuesta, Resultado, Paciente,  AsignacionSistemaExperto
 
 router = APIRouter(
     prefix="/formularios",
@@ -141,68 +142,63 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
+@router.post("/asignar_tratamiento/{id_paciente}")
+def asignar_tratamiento_con_sistema_experto(id_paciente: int, db: Session = Depends(get_db)):
+    TIPOS_FORM = {"ansiedad": 1, "depresion": 2, "estres": 5, "bienestar": 4, "mindfulness": 6}
+    preguntas_suicidas = [43, 44, 45, 46, 47, 48]
 
-TIPOS_FORMULARIO = {
-    "ansiedad": 1,
-    "depresion": 2,
-    "estres": 5,
-    "bienestar": 4,
-    "mindfulness": 6
-}
+    def get_formulario_puntaje(tipo):
+        form = db.query(Formulario)\
+            .filter(Formulario.ID_Paciente == id_paciente, Formulario.ID_TipoFormulario == tipo)\
+            .order_by(Formulario.ID_Formulario.desc()).first()
+        if not form:
+            return None
+        resultado = db.query(Resultado).filter(Resultado.ID_Formulario == form.ID_Formulario).first()
+        return resultado.Puntuacion if resultado else None
 
-PREGUNTAS_SUICIDAS_IDS = [43, 44, 45, 46, 47, 48]
+    datos = {
+        "ansiedad": get_formulario_puntaje(TIPOS_FORM["ansiedad"]),
+        "depresion": get_formulario_puntaje(TIPOS_FORM["depresion"]),
+        "estres": get_formulario_puntaje(TIPOS_FORM["estres"]),
+        "bienestar": get_formulario_puntaje(TIPOS_FORM["bienestar"]),
+        "mindfulness": float(get_formulario_puntaje(TIPOS_FORM["mindfulness"])),
+        "suicida": [],
+        "ent": "no"
+    }
 
-@router.get("/paciente/{id_paciente}/datos_expertos")
-def obtener_datos_para_sistema_experto(id_paciente: int, db: Session = Depends(get_db)):
-    puntajes = {}
-    # 1. Obtener puntajes por tipo de formulario
-    for nombre, tipo in TIPOS_FORMULARIO.items():
-        formulario = (
-            db.query(Formulario)
-            .filter(Formulario.ID_Paciente == id_paciente)
-            .filter(Formulario.ID_TipoFormulario == tipo)
-            .order_by(Formulario.ID_Formulario.desc())
-            .first()
-        )
-        if formulario:
-            resultado = (
-                db.query(Resultado)
-                .filter(Resultado.ID_Formulario == formulario.ID_Formulario)
-                .first()
-            )
-            puntajes[nombre] = resultado.Puntuacion if resultado else None
-        else:
-            puntajes[nombre] = None
+    for pid in preguntas_suicidas:
+        r = db.query(Respuesta).filter(Respuesta.ID_Paciente == id_paciente, Respuesta.ID_Pregunta == pid)\
+            .order_by(Respuesta.ID_Respuesta.desc()).first()
+        datos["suicida"].append(r.Respuesta.lower() if r else "no")
 
-    # 2. Obtener respuestas suicidas
-    respuestas_suicidas = []
-    for pregunta_id in PREGUNTAS_SUICIDAS_IDS:
-        respuesta = (
-            db.query(Respuesta)
-            .filter(Respuesta.ID_Paciente == id_paciente)
-            .filter(Respuesta.ID_Pregunta == pregunta_id)
-            .order_by(Respuesta.ID_Respuesta.desc())
-            .first()
-        )
-        if respuesta:
-            respuestas_suicidas.append(respuesta.Respuesta.lower())
-        else:
-            respuestas_suicidas.append("no")  # valor por defecto si no hay respuesta
-
-    # 3. Determinar ENT
     paciente = db.query(Paciente).filter(Paciente.ID_Paciente == id_paciente).first()
     if not paciente:
-        raise HTTPException(status_code=404, detail="Paciente no encontrado.")
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+    datos["ent"] = "no" if paciente.ID_TipoENT == 6 else "si"
 
-    ent = "no" if paciente.ID_TipoENT == 6 else "si"
+    resultado = evaluar_paciente(datos)
+
+    if resultado.get("Canalizado"):
+        raise HTTPException(status_code=403, detail="Canalización externa requerida")
+
+    nivel = resultado["nivel_intervencion"]
+    log = resultado["log"]
+    map_niveles = {"Leve": 1, "Moderado": 2, "Intenso": 3}
+    id_tratamiento = map_niveles.get(nivel)
+
+    asignacion = AsignacionSistemaExperto(
+        ID_Paciente=id_paciente,
+        ID_Tratamiento=id_tratamiento,
+        Log="\n".join(log),
+        FechaEvaluacion=datetime.now()
+    )
+    db.add(asignacion)
+    db.commit()
+    db.refresh(asignacion)
 
     return {
-        "id_paciente": id_paciente,
-        "ansiedad": puntajes["ansiedad"],
-        "depresion": puntajes["depresion"],
-        "estres": puntajes["estres"],
-        "bienestar": puntajes["bienestar"],
-        "mindfulness": puntajes["mindfulness"],
-        "suicida": respuestas_suicidas,
-        "ent": ent
+        "mensaje": "Tratamiento asignado",
+        "nivel": nivel,
+        "id_tratamiento": id_tratamiento,
+        "log": log
     }
