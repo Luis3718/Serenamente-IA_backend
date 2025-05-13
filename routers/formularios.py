@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from datetime import datetime
+from datetime import datetime, date
 from schemas import RespuestaCreate, ResultadoCreate
 from Sistema_experto.reglas.inferencia import evaluar_paciente
-from models import Formulario, Respuesta, Resultado, Paciente,  AsignacionSistemaExperto
+from models import Formulario, Respuesta, Resultado, Paciente, AsignacionSistemaExperto, Paciente_Tratamiento
 
 router = APIRouter(
     prefix="/formularios",
@@ -143,33 +143,36 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
-@router.post("/asignar_tratamiento/{id_paciente}")
-def asignar_tratamiento_con_sistema_experto(id_paciente: int, db: Session = Depends(get_db)):
+@router.get("/datos_expertos/{id_paciente}")
+def obtener_datos_expertos(id_paciente: int, db: Session = Depends(get_db)):
     TIPOS_FORM = {"ansiedad": 1, "depresion": 2, "estres": 5, "bienestar": 4, "mindfulness": 6}
     preguntas_suicidas = [43, 44, 45, 46, 47, 48]
 
-    def get_formulario_puntaje(tipo):
-        form = db.query(Formulario)\
-            .filter(Formulario.ID_Paciente == id_paciente, Formulario.ID_TipoFormulario == tipo)\
-            .order_by(Formulario.ID_Formulario.desc()).first()
+    def obtener_puntaje(tipo):
+        form = db.query(Formulario).filter(
+            Formulario.ID_Paciente == id_paciente,
+            Formulario.ID_TipoFormulario == tipo
+        ).order_by(Formulario.ID_Formulario.desc()).first()
         if not form:
             return None
         resultado = db.query(Resultado).filter(Resultado.ID_Formulario == form.ID_Formulario).first()
         return resultado.Puntuacion if resultado else None
 
     datos = {
-        "ansiedad": get_formulario_puntaje(TIPOS_FORM["ansiedad"]),
-        "depresion": get_formulario_puntaje(TIPOS_FORM["depresion"]),
-        "estres": get_formulario_puntaje(TIPOS_FORM["estres"]),
-        "bienestar": get_formulario_puntaje(TIPOS_FORM["bienestar"]),
-        "mindfulness": float(get_formulario_puntaje(TIPOS_FORM["mindfulness"])),
+        "ansiedad": obtener_puntaje(TIPOS_FORM["ansiedad"]),
+        "depresion": obtener_puntaje(TIPOS_FORM["depresion"]),
+        "estres": obtener_puntaje(TIPOS_FORM["estres"]),
+        "bienestar": obtener_puntaje(TIPOS_FORM["bienestar"]),
+        "mindfulness": float(obtener_puntaje(TIPOS_FORM["mindfulness"]) or 0.0),
         "suicida": [],
         "ent": "no"
     }
 
     for pid in preguntas_suicidas:
-        r = db.query(Respuesta).filter(Respuesta.ID_Paciente == id_paciente, Respuesta.ID_Pregunta == pid)\
-            .order_by(Respuesta.ID_Respuesta.desc()).first()
+        r = db.query(Respuesta).filter(
+            Respuesta.ID_Paciente == id_paciente,
+            Respuesta.ID_Pregunta == pid
+        ).order_by(Respuesta.ID_Respuesta.desc()).first()
         datos["suicida"].append(r.Respuesta.lower() if r else "no")
 
     paciente = db.query(Paciente).filter(Paciente.ID_Paciente == id_paciente).first()
@@ -177,25 +180,50 @@ def asignar_tratamiento_con_sistema_experto(id_paciente: int, db: Session = Depe
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
     datos["ent"] = "no" if paciente.ID_TipoENT == 6 else "si"
 
-    resultado = evaluar_paciente(datos)
+    return {"id_paciente": id_paciente, **datos}
+
+@router.post("/asignar_tratamiento")
+def asignar_tratamiento(data: dict, db: Session = Depends(get_db)):
+    from Sistema_experto.reglas.inferencia import evaluar_paciente
+
+    resultado = evaluar_paciente(data)
 
     if resultado.get("Canalizado"):
-        raise HTTPException(status_code=403, detail="Canalización externa requerida")
+        raise HTTPException(status_code=403, detail="Paciente requiere canalización clínica")
 
     nivel = resultado["nivel_intervencion"]
     log = resultado["log"]
-    map_niveles = {"Leve": 1, "Moderado": 2, "Intenso": 3}
-    id_tratamiento = map_niveles.get(nivel)
+    paciente_id = data.get("id_paciente")
+
+    nivel_map = {"Leve": 1, "Moderado": 2, "Intenso": 3}
+    id_tratamiento = nivel_map.get(nivel)
+
+    if not id_tratamiento:
+        raise HTTPException(status_code=400, detail="Nivel inválido")
 
     asignacion = AsignacionSistemaExperto(
-        ID_Paciente=id_paciente,
+        ID_Paciente=paciente_id,
         ID_Tratamiento=id_tratamiento,
-        Log="\n".join(log),
-        FechaEvaluacion=datetime.now()
+        Log_sistema="\n".join(log)
     )
+
     db.add(asignacion)
     db.commit()
     db.refresh(asignacion)
+
+    ya_asignado = db.query(Paciente_Tratamiento).filter(Paciente_Tratamiento.ID_Paciente == paciente_id).first()
+    if ya_asignado:
+        raise HTTPException(status_code=400, detail="El paciente ya tiene un tratamiento asignado")
+    
+    # Asignar tratamiento real en tabla formal
+    nuevo_tratamiento = Paciente_Tratamiento(
+        ID_Paciente=paciente_id,
+        ID_Tratamiento=id_tratamiento,
+        FechaInicio=date.today()
+    )
+    db.add(nuevo_tratamiento)
+    db.commit()
+
 
     return {
         "mensaje": "Tratamiento asignado",
