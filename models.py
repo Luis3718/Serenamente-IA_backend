@@ -68,7 +68,7 @@ class AsignacionSistemaExperto(Base):
     ID_Asignacion = Column(Integer, primary_key=True, index=True, autoincrement=True)
     ID_Paciente = Column(Integer, ForeignKey("Pacientes.ID_Paciente"), nullable=False)
     ID_Tratamiento = Column(Integer, ForeignKey("Tratamientos.ID_Tratamiento"), nullable=False)
-    Log = Column(Text, nullable=False)
+    Log_sistema = Column(Text, nullable=False)
     FechaEvaluacion = Column(DateTime, default=func.now())
 
 class Tratamiento(Base):

@@ -118,7 +118,7 @@ CREATE TABLE AsignacionesSistemaExperto (
     ID_Evaluacion INTEGER PRIMARY KEY auto_increment,
     ID_Paciente INTEGER NOT NULL,
     ID_Tratamiento INTEGER NOT NULL,
-    Log TEXT NOT NULL,
+    Log_sistema TEXT NOT NULL,
     FechaEvaluacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
     FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos(ID_Tratamiento)

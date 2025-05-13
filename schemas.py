@@ -100,13 +100,13 @@ class Resultado(ResultadoBase):
 class AsignacionCreate(BaseModel):
     ID_Paciente: int
     ID_Tratamiento: int
-    Log: List[str]  # lista de pasos aplicados
+    Log_sistema: List[str]  # lista de pasos aplicados
 
 class AsignacionOut(BaseModel):
     ID_Asignacion: int
     ID_Paciente: int
     ID_Tratamiento: int
-    Log: str
+    Log_sistema: str
     FechaEvaluacion: datetime
 
     class Config:

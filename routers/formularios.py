@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
+from datetime import datetime
 from schemas import RespuestaCreate, ResultadoCreate
 from Sistema_experto.reglas.inferencia import evaluar_paciente
 from models import Formulario, Respuesta, Resultado, Paciente,  AsignacionSistemaExperto
