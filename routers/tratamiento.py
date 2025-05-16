@@ -289,3 +289,32 @@ def guardar_respuestas(respuestas: List[RespuestaEntrada], db: Session = Depends
 
     db.commit()
     return {"message": "Respuestas guardadas correctamente"}
+
+@router.get("/progreso/porcentaje_habilidad/{paciente_id}/{id_habilidad}")
+def obtener_porcentaje_habilidad(paciente_id: int, id_habilidad: int, db: Session = Depends(get_db)):
+    # Obtener tratamiento asignado al paciente
+    tratamiento = db.query(Paciente_Tratamiento).filter(Paciente_Tratamiento.ID_Paciente == paciente_id).first()
+    if not tratamiento:
+        raise HTTPException(status_code=404, detail="Tratamiento no asignado")
+
+    tratamiento_id = tratamiento.ID_Tratamiento
+
+    # Total de actividades para esa habilidad
+    total = db.query(Tratamiento_Habilidad_Actividad).filter(
+        Tratamiento_Habilidad_Actividad.ID_Tratamiento == tratamiento_id,
+        Tratamiento_Habilidad_Actividad.ID_Habilidad == id_habilidad
+    ).count()
+
+    # Actividades completadas por el paciente en esa habilidad
+    completadas = db.query(Paciente_Actividad).join(
+        Tratamiento_Habilidad_Actividad,
+        Paciente_Actividad.ID_Actividad == Tratamiento_Habilidad_Actividad.ID_Actividad
+    ).filter(
+        Paciente_Actividad.ID_Paciente == paciente_id,
+        Tratamiento_Habilidad_Actividad.ID_Habilidad == id_habilidad,
+        Tratamiento_Habilidad_Actividad.ID_Tratamiento == tratamiento_id,
+        Paciente_Actividad.Completada == True
+    ).count()
+
+    porcentaje = int((completadas / total) * 100) if total > 0 else 0
+    return {"porcentaje": porcentaje}
