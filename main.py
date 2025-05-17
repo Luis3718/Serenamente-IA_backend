@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import pacientes, auth, formularios, tratamiento
+from routers import pacientes, auth, formularios, tratamiento, admin
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
@@ -22,6 +22,7 @@ app.include_router(pacientes.router)
 app.include_router(formularios.router)
 app.include_router(auth.router)
 app.include_router(tratamiento.router)
+app.include_router(admin.router)
 
 if __name__ == "__main__":
     # Configuración del puerto

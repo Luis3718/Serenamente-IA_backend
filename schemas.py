@@ -42,6 +42,14 @@ class PerfilUpdate(BaseModel):
     Apellidos: str = None
     Celular: str = None
     
+class AdminLogin(BaseModel):
+    usuario: str
+    contrasena: str
+
+class AdminCreate(BaseModel):
+    usuario: str
+    contrasena: str
+
 class FormularioBase(BaseModel):
     ID_Paciente: int
     ID_TipoFormulario: int

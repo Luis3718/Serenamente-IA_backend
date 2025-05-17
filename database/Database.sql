@@ -77,6 +77,13 @@ CREATE TABLE Pacientes (
     FOREIGN KEY (ID_TipoENT) REFERENCES TipoENTs(ID_TipoENT)
 );
 
+-- Tabla de usuarios administrador
+CREATE TABLE Admins (
+  ID_Admin INT PRIMARY KEY AUTO_INCREMENT,
+  Usuario VARCHAR(100) UNIQUE NOT NULL,
+  Contrasena VARCHAR(64) NOT NULL  
+);
+
 -- Tabla de formularios
 CREATE TABLE Formularios (
     ID_Formulario INTEGER PRIMARY KEY auto_increment,

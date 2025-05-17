@@ -1,6 +1,7 @@
 import hashlib  # Importar hashlib para el hash de contraseñas
 import schemas
 import models
+from datetime import date
 from correo import enviar_correo_verificacion
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -16,8 +17,6 @@ router = APIRouter(
 def hash_password(password: str) -> str:
     """Función para hashear la contraseña usando SHA-256."""
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
-from datetime import date
 
 @router.post("/", response_model=schemas.Paciente)
 def crear_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_db)):

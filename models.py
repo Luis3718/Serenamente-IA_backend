@@ -30,6 +30,13 @@ class Paciente(Base):
     entrevista_contestada = Column(Boolean, default=False, nullable=False)  
     en_pausa = Column(Boolean, default=False, nullable=False)  
 
+class Admin(Base):
+    __tablename__ = "Admins"
+
+    ID_Admin = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Usuario = Column(String(100), unique=True, nullable=False)
+    Contrasena = Column(String(64), nullable=False) 
+
 class TiposFormulario(Base):
     __tablename__ = 'TiposFormulario'
     ID_TipoFormulario = Column(Integer, primary_key=True)
