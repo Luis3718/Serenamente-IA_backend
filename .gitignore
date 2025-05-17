@@ -22,6 +22,9 @@ venv/
 # Archivos de configuración de logs
 *.log
 
+*.pdf
+*.png
+
 smtp_config.txt
 
 database.py
