@@ -2,12 +2,14 @@ import hashlib  # Importar hashlib para el hash de contraseñas
 import schemas
 import models
 from datetime import date
+from typing import List
 from correo import enviar_correo_verificacion
+from routers.admin import obtener_admin_actual
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Paciente
-from schemas import PacienteCreate, Paciente, PerfilUpdate
+from schemas import PacienteCreate, Paciente, PerfilUpdate, PacienteOut, PacienteAdminFullUpdate
 
 router = APIRouter(
     prefix="/pacientes",
@@ -65,6 +67,10 @@ def crear_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_d
 
     return nuevo_paciente
 
+@router.get("/", response_model=List[PacienteOut])
+def obtener_todos_los_pacientes(db: Session = Depends(get_db), admin=Depends(obtener_admin_actual)):
+    return db.query(models.Paciente).all()
+
 @router.get("/{paciente_id}", response_model=Paciente)
 def obtener_paciente(paciente_id: int, db: Session = Depends(get_db)):
     paciente = db.query(Paciente).filter(Paciente.ID_Paciente == paciente_id).first()
@@ -72,7 +78,7 @@ def obtener_paciente(paciente_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
     return paciente
 
-@router.get("/{paciente_id}", response_model=schemas.Paciente)
+@router.get("termina_tratamiento/{paciente_id}", response_model=schemas.Paciente)
 def salir_tratamiento(paciente_id: int, db: Session = Depends(get_db)):
     paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
     if not paciente:
@@ -111,3 +117,33 @@ def actualizar_perfil_paciente(paciente_id: int, perfil_data: PerfilUpdate, db: 
     db.commit()
     db.refresh(paciente)
     return {"message": "Perfil actualizado exitosamente"}
+
+@router.put("/admin/actualizar_completo/{paciente_id}")
+def actualizar_paciente_completo(
+    paciente_id: int,
+    data: PacienteAdminFullUpdate,
+    db: Session = Depends(get_db),
+    admin=Depends(obtener_admin_actual)
+):
+    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+    if data.Nombre:
+        paciente.Nombre = data.Nombre
+    if data.Apellidos:
+        paciente.Apellidos = data.Apellidos
+    if data.Correo:
+        paciente.Correo = data.Correo
+    if data.SegundoCorreo:
+        paciente.CorreoAlternativo = data.SegundoCorreo
+    if data.Sexo:
+        paciente.Sexo = data.Sexo
+    if data.FechaNacimiento:
+        paciente.FechaNacimiento = data.FechaNacimiento
+    if data.NuevaContrasena:
+        paciente.Contraseña = hash_password(data.NuevaContrasena)
+
+    db.commit()
+    db.refresh(paciente)
+    return {"message": "Paciente actualizado completamente"}

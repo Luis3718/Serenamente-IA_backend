@@ -29,19 +29,42 @@ class PacienteBase(BaseModel):
 
 class PacienteCreate(PacienteBase):
     Contraseña: str
-    EsApto: Optional[bool] = None  # Campo opcional pero no necesario en la entrada
+    EsApto: Optional[bool] = None  
 
 class Paciente(PacienteBase):
     ID_Paciente: int
 
     class Config:
-        from_attributes = True  # Esto habilita la conversión desde modelos de SQLAlchemy
+        from_attributes = True  
 
 class PerfilUpdate(BaseModel):
     Nombre: str = None
     Apellidos: str = None
     Celular: str = None
-    
+
+class PacienteOut(BaseModel):
+    ID_Paciente: int
+    Nombre: str
+    Apellidos: str
+    Correo: str
+    Sexo: str
+    FechaNacimiento: date
+
+    class Config:
+        orm_mode = True
+
+class PacienteAdminFullUpdate(BaseModel):
+    Nombre: Optional[str]
+    Apellidos: Optional[str]
+    Correo: Optional[str]
+    SegundoCorreo: Optional[str]
+    Sexo: Optional[str]
+    FechaNacimiento: Optional[date]
+    NuevaContrasena: Optional[str]  # En texto plano (la hashearemos)
+
+    class Config:
+        orm_mode = True
+
 class AdminLogin(BaseModel):
     usuario: str
     contrasena: str
