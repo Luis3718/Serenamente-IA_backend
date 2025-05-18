@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer
 from fastapi import Security
 from Reportes import generar_pdf_reporte
-from Exportar_preguntas import exportar_pretest_individual
+from Exportar_preguntas import exportar_pretest_individual, exportar_pretest_completo, exportar_base_completa
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 
@@ -100,8 +100,45 @@ def descargar_pretest_paciente(paciente_id: int, admin=Depends(obtener_admin_act
         return FileResponse(
             path=filename,
             filename=filename,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            background=BackgroundTask(lambda: os.remove(filename))
         )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar el pretest: {str(e)}")
+
+@router.get("/exportar_pretests_completo")
+def descargar_pretests_completos(admin=Depends(obtener_admin_actual)):
+    try:
+        exportar_pretest_completo()
+        filename = "Pretest_Completo.xlsx"
+
+        if not os.path.exists(filename):
+            raise HTTPException(status_code=404, detail="Archivo no generado")
+
+        return FileResponse(
+            path=filename,
+            filename="Pretest_Completo.xlsx",
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            background=BackgroundTask(lambda: os.remove(filename))
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error exportando pretests: {str(e)}")
+
+@router.get("/exportar_base_completa")
+def descargar_base_completa(admin=Depends(obtener_admin_actual)):
+    try:
+        exportar_base_completa()
+        filename = "Base_de_datos_Serenamente.xlsx"
+
+        if not os.path.exists(filename):
+            raise HTTPException(status_code=404, detail="Archivo no generado")
+
+        return FileResponse(
+            path=filename,
+            filename="Base_de_datos_completa.xlsx",
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            background=BackgroundTask(lambda: os.remove(filename))
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error exportando base completa: {str(e)}")
