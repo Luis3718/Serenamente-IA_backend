@@ -615,3 +615,7 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (3,7,26),
 (3,7,27),
 (3,8,28);
+
+-- Agregamos el usuario 1 de administrador 
+INSERT INTO Admins (Usuario, Contrasena)
+VALUES ('admin', '4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2');

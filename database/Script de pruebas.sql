@@ -1,6 +1,7 @@
 use SerenaMenteDB;
 describe Pacientes;
 select * from Pacientes;	
+select * from Admins;	
 select * from TiposFormulario;
 Select * From Preguntas;
 select * from Respuestas;
@@ -9,6 +10,7 @@ select * from Formularios;
 select * from tratamientos;
 select * from Paciente_Tratamiento;
 select * from ProgresoPaciente;
+select * from AsignacionesSistemaExperto;
 
 SELECT 
     ID_Paciente,
