@@ -1,5 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 from fpdf import FPDF
 from sqlalchemy import create_engine
 import os
@@ -76,7 +78,7 @@ def generar_pdf_reporte(paciente_id):
         progreso = pd.read_sql(query, engine, params=(paciente_id, tratamiento_id))
 
         # 3. Calcular progreso real por habilidad
-        progreso["Completada"] = progreso["Completada"].fillna(False)
+        progreso["Completada"] = progreso["Completada"].fillna(False).infer_objects(copy=False)
 
         conteo = progreso.groupby("Habilidad").agg(
             total_actividades=("ID_Actividad", "count"),

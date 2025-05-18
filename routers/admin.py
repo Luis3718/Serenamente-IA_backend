@@ -12,6 +12,7 @@ from fastapi import Security
 from Reportes import generar_pdf_reporte
 from Exportar_preguntas import exportar_pretest_individual
 from fastapi.responses import FileResponse
+from starlette.background import BackgroundTask
 
 SECRET_KEY = "HBAFIQBbhb2u3412bHB"
 ALGORITHM = "HS256"
@@ -78,10 +79,15 @@ def descargar_reporte_paciente(paciente_id: int, admin=Depends(obtener_admin_act
         filename = f"Reporte_Paciente_{paciente_id}.pdf"
         if not os.path.exists(filename):
             raise HTTPException(status_code=404, detail="Reporte no encontrado")
-        return FileResponse(path=filename, filename=filename, media_type="application/pdf")
+        return FileResponse(
+            path=filename,
+            filename=filename,
+            media_type="application/pdf",
+            background=BackgroundTask(lambda: os.remove(filename))
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar el reporte: {str(e)}")
-    
+
 @router.get("/descargar_pretest/{paciente_id}")
 def descargar_pretest_paciente(paciente_id: int, admin=Depends(obtener_admin_actual)):
     try:
