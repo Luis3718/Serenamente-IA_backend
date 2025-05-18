@@ -162,6 +162,7 @@ def exportar_pretest_individual(paciente_id: int):
         df_export = pd.DataFrame([fila])
         df_export.to_excel(output_path, index=False)
         print(f"✅ Pretest individual exportado correctamente: {output_path}")
+        return nombre_archivo
 
     except Exception as e:
         print("❌ Error durante la exportación individual:", str(e))

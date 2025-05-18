@@ -1,4 +1,5 @@
 import hashlib
+import os
 import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -8,6 +9,9 @@ from schemas import AdminLogin, AdminCreate
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer
 from fastapi import Security
+from Reportes import generar_pdf_reporte
+from Exportar_preguntas import exportar_pretest_individual
+from fastapi.responses import FileResponse
 
 SECRET_KEY = "HBAFIQBbhb2u3412bHB"
 ALGORITHM = "HS256"
@@ -66,3 +70,32 @@ def crear_admin(data: AdminCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(nuevo_admin)
     return {"mensaje": "Administrador creado exitosamente"}
+
+@router.get("/descargar_reporte/{paciente_id}")
+def descargar_reporte_paciente(paciente_id: int, admin=Depends(obtener_admin_actual)):
+    try:
+        generar_pdf_reporte(paciente_id)
+        filename = f"Reporte_Paciente_{paciente_id}.pdf"
+        if not os.path.exists(filename):
+            raise HTTPException(status_code=404, detail="Reporte no encontrado")
+        return FileResponse(path=filename, filename=filename, media_type="application/pdf")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al generar el reporte: {str(e)}")
+    
+@router.get("/descargar_pretest/{paciente_id}")
+def descargar_pretest_paciente(paciente_id: int, admin=Depends(obtener_admin_actual)):
+    try:
+        # Genera el archivo con nombre interno automático
+        filename = exportar_pretest_individual(paciente_id)
+
+        if not os.path.exists(filename):
+            raise HTTPException(status_code=404, detail="Archivo no generado")
+
+        return FileResponse(
+            path=filename,
+            filename=filename,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al generar el pretest: {str(e)}")
