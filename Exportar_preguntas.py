@@ -1,12 +1,13 @@
 import pandas as pd
 from sqlalchemy import create_engine
+from database import engine
 import os
 
 def exportar_pretest_completo():
     try:
         print("🟢 Iniciando exportación...")
 
-        engine = create_engine('mysql+pymysql://root:Gomuroot2527@localhost/SerenaMenteDB')
+        engine
         output_dir = os.path.dirname(os.path.abspath(__file__))
         output_path = os.path.join(output_dir, "Pretest_Completo.xlsx")
 
@@ -88,7 +89,7 @@ def exportar_pretest_individual(paciente_id: int):
     try:
         print(f"🟢 Exportando pretest del paciente ID {paciente_id}...")
 
-        engine = create_engine('mysql+pymysql://root:Gomuroot2527@localhost/SerenaMenteDB')
+        engine
         output_dir = os.path.dirname(os.path.abspath(__file__))
 
         # Obtener el nombre del paciente
@@ -171,7 +172,7 @@ def exportar_base_completa():
     try:
         print("🟢 Iniciando exportación...")
 
-        engine = create_engine('mysql+pymysql://root:Gomuroot2527@localhost/SerenaMenteDB')
+        engine
         output_dir = os.path.dirname(os.path.abspath(__file__))
         output_path = os.path.join(output_dir, "Base_de_datos_Serenamente.xlsx")
 

@@ -306,7 +306,10 @@ INSERT INTO TiposFormulario (NombreFormulario) VALUES
 ('APOI Favorable'),
 ('Índice de Calidad de Sueño de Pittsburgh'),
 ('Escala de Autocompasión (SCS)'),
-('Entrevista Chatbot');
+('Entrevista Chatbot'),
+('ASI Aceptabildad'),
+('ASI Satisfacción'),
+('ASI Idoneidad');
 
 -- Insertar las preguntas del BAI
 INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
@@ -487,6 +490,23 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (145, 11, 'Un elemento fundamental para que las actividades de mindfulness tengan un impacto positivo en la vida es la constancia diaria de las prácticas, nos gustaría enviarte recordatorios para realizar tus prácticas. ¿En qué horario quieres que te envíe un recordatorio para hacer tus prácticas de SerenaMente IA?'),
 (146, 11, '¿Qué dificultades crees que puede haber en tu práctica de mindfulness?'),
 (147, 11, '¿Qué te gustaría lograr o mejorar con la práctica de mindfulness?');
+
+-- Insertar las preguntas para el cuestionario ASI Aceptabilidad
+INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+(148, 12, "SerenaMente IA fue adecuada para mi"),
+(149, 12, "¿Cree que SerenaMente fue útil en su caso?"),
+(150, 12, "¿Cree que SerenaMente IA podría ser útil para tratar otros problemas psicológicos?");
+
+-- Insertar las preguntas para el cuestionario ASI Satisfacción
+INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+(151, 13, "En general, ¿qué tan satisfecho(a) está con la forma en que SerenaMente IA ha tratado su problema?"),
+(152, 13, "¿Le ha ayudado SerenaMente IA en relación con un problema específico?");
+
+-- Insertar las preguntas para el cuestionario ASI Idoneidad
+INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+(153, 14, "¿Las estrategias terapéuticas/ tareas/ actividades que se utilizaron a lo largo de esta aplicación fueron entendibles para usted?"),
+(154, 14, "Los contenidos de la aplicación le parecieron interesantes."),
+(155, 14, "¿Qué modificaría?");
 
 -- Crear los valores de los diferentes tratamientos
 INSERT INTO Tratamientos(ID_Tratamiento, Nivel) VALUES

@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('Agg')
 from fpdf import FPDF
 from sqlalchemy import create_engine
+from database import engine
 import os
 from io import BytesIO
 
@@ -24,7 +25,7 @@ class PDF(FPDF):
         self.multi_cell(0, 10, text)
 
 def generar_pdf_reporte(paciente_id):
-    engine = create_engine('mysql+pymysql://root:Gomuroot2527@localhost/SerenaMenteDB')
+    engine
     pdf = PDF()
     pdf.add_page()
 
