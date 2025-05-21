@@ -99,7 +99,7 @@ CREATE TABLE Preguntas (
     ID_Pregunta INTEGER PRIMARY KEY,
     ID_TipoFormulario INTEGER NOT NULL,
     Texto VARCHAR(512) NOT NULL,
-    FOREIGN KEY (ID_TipoFormulario) REFERENCES Tiposformulario(ID_TipoFormulario)
+    FOREIGN KEY (ID_TipoFormulario) REFERENCES TiposFormulario(ID_TipoFormulario)
 );
 
 -- Tabla de respuestas a las preguntas del formulario
@@ -309,7 +309,8 @@ INSERT INTO TiposFormulario (NombreFormulario) VALUES
 ('Entrevista Chatbot'),
 ('ASI Aceptabildad'),
 ('ASI Satisfacción'),
-('ASI Idoneidad');
+('ASI Idoneidad'),
+('SUS');
 
 -- Insertar las preguntas del BAI
 INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
@@ -507,6 +508,18 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (153, 14, "¿Las estrategias terapéuticas/ tareas/ actividades que se utilizaron a lo largo de esta aplicación fueron entendibles para usted?"),
 (154, 14, "Los contenidos de la aplicación le parecieron interesantes."),
 (155, 14, "¿Qué modificaría?");
+
+INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+(156, 15, "Creo que me gustará usar con frecuencia este sistema"),
+(157, 15, "El sistema me pareció poco complejo en su uso"),
+(158, 15, "Creo que es fácil utilizar el sistema"),
+(159, 15, "Creo que necesitaría del apoyo de un experto / una experta para poder usar el sistema"),
+(160, 15, "Me pareció que los componentes del sistema están bastante bien integrados"),
+(161, 15, "Creo que había demasiadas inconsistencias en el sistema"),
+(162, 15, "Imagino que la mayoría de las personas aprenderían muy rápidamente a utilizar el sistema"),
+(163, 15, "Me pareció que el sistema es muy extenso para su uso"),
+(164, 15, "Me pareció que el sistema es muy extenso para su uso"),
+(165, 15, "Necesito aprender muchas cosas antes de manejarme en el sistema");
 
 -- Crear los valores de los diferentes tratamientos
 INSERT INTO Tratamientos(ID_Tratamiento, Nivel) VALUES
