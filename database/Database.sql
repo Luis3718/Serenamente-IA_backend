@@ -1,217 +1,207 @@
-CREATE DATABASE SerenaMenteDB;
+CREATE DATABASE serenamentedb;
 
-USE SerenaMenteDB;
+USE serenamentedb;
 
 -- Tablas de catálogo
-CREATE TABLE NivelesEstudios (
-    ID_NivelEstudios INTEGER PRIMARY KEY,
-    Descripcion VARCHAR(50) NOT NULL
+CREATE TABLE niveles_estudios (
+    id_nivelestudios INTEGER PRIMARY KEY,
+    descripcion VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Ocupaciones (
-    ID_Ocupacion INTEGER PRIMARY KEY,
-    Descripcion VARCHAR(50) NOT NULL
+CREATE TABLE ocupaciones (
+    id_ocupacion INTEGER PRIMARY KEY,
+    descripcion VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Residencias (
-    ID_Residencia INTEGER PRIMARY KEY,
-    Descripcion VARCHAR(100) NOT NULL
+CREATE TABLE residencias (
+    id_residencia INTEGER PRIMARY KEY,
+    descripcion VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE EstadosCiviles (
-    ID_EstadoCivil INTEGER PRIMARY KEY,
-    Descripcion VARCHAR(50) NOT NULL
+CREATE TABLE estados_civiles (
+    id_estadocivil INTEGER PRIMARY KEY,
+    descripcion VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE SexoCatalogo (
-    Descripcion VARCHAR(20) PRIMARY KEY
+CREATE TABLE tipos_formulario (
+    id_tipoformulario INTEGER PRIMARY KEY auto_increment,
+    nombreformulario VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE TratamientoCatalogo (
-    Descripcion VARCHAR(20) PRIMARY KEY
-);
-
-CREATE TABLE TiposFormulario (
-    ID_TipoFormulario INTEGER PRIMARY KEY auto_increment,
-    NombreFormulario VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE TipoENTs (
-	ID_TipoENT INTEGER PRIMARY KEY auto_increment,
-    NombreENT VARCHAR(255) NOT NULL
+CREATE TABLE tipo_ents (
+	id_tipoent INTEGER PRIMARY KEY auto_increment,
+    nombre_ent VARCHAR(255) NOT NULL
 );
 
 -- Tabla para registrar usuarios/pacientes
-CREATE TABLE Pacientes (
-    ID_Paciente INTEGER PRIMARY KEY auto_increment,
-    Nombre VARCHAR(100) NOT NULL,
-    Apellidos VARCHAR(100) NOT NULL,
-    Correo VARCHAR(100) NOT NULL UNIQUE,
-    CorreoAlternativo VARCHAR(100),
-    Contraseña VARCHAR(255) NOT NULL,
-    Celular CHAR(10) NOT NULL,
-    Sexo VARCHAR(20) NOT NULL,
-    FechaNacimiento DATE NOT NULL,
-    ID_NivelEstudios INTEGER NOT NULL,
-    ID_Ocupacion INTEGER NOT NULL,
-    ID_Residencia INTEGER NOT NULL,
-    ID_EstadoCivil INTEGER NOT NULL,
-    EnTratamiento VARCHAR(20) NOT NULL,
-    ID_TipoENT INTEGER NOT NULL,
-    TomaMedicamentos VARCHAR(255),
-    NombreMedicacion VARCHAR(255),
-    AvisoPrivacidad BOOLEAN NOT NULL,
-    CartaConsentimiento BOOLEAN NOT NULL,
-    FechaRegistro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    EsApto BOOLEAN DEFAULT FALSE,
-    CorreoVerificado BOOLEAN DEFAULT FALSE,
+CREATE TABLE pacientes (
+    id_paciente INTEGER PRIMARY KEY auto_increment,
+    nombre VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
+    correoalternativo VARCHAR(100),
+    contraseña VARCHAR(255) NOT NULL,
+    celular CHAR(10) NOT NULL,
+    sexo VARCHAR(20) NOT NULL,
+    fechanacimiento DATE NOT NULL,
+    id_nivelestudios INTEGER NOT NULL,
+    id_ocupacion INTEGER NOT NULL,
+    id_residencia INTEGER NOT NULL,
+    id_estadocivil INTEGER NOT NULL,
+	id_tipoent INTEGER NOT NULL,
+    entratamiento VARCHAR(20) NOT NULL,
+    tomamedicamentos VARCHAR(255),
+    nombremedicacion VARCHAR(255),
+    avisoprivacidad BOOLEAN NOT NULL,
+    cartaconsentimiento BOOLEAN NOT NULL,
+    fecharegistro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    esapto BOOLEAN DEFAULT FALSE,
+    correoverificado BOOLEAN DEFAULT FALSE,
     formulario_contestado BOOLEAN DEFAULT FALSE,
     entrevista_contestada BOOLEAN DEFAULT FALSE,
     en_pausa BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (ID_NivelEstudios) REFERENCES NivelesEstudios(ID_NivelEstudios),
-    FOREIGN KEY (ID_Ocupacion) REFERENCES Ocupaciones(ID_Ocupacion),
-    FOREIGN KEY (ID_Residencia) REFERENCES Residencias(ID_Residencia),
-    FOREIGN KEY (ID_EstadoCivil) REFERENCES EstadosCiviles(ID_EstadoCivil),
-    FOREIGN KEY (Sexo) REFERENCES SexoCatalogo(Descripcion),
-    FOREIGN KEY (EnTratamiento) REFERENCES TratamientoCatalogo(Descripcion),
-    FOREIGN KEY (ID_TipoENT) REFERENCES TipoENTs(ID_TipoENT)
+    FOREIGN KEY (id_nivelestudios) REFERENCES niveles_estudios(id_nivelestudios),
+    FOREIGN KEY (id_ocupacion) REFERENCES ocupaciones(id_ocupacion),
+    FOREIGN KEY (id_residencia) REFERENCES residencias(id_residencia),
+    FOREIGN KEY (id_estadocivil) REFERENCES estados_civiles(id_estadocivil),
+    FOREIGN KEY (id_tipoent) REFERENCES tipo_ents(id_tipoent)
 );
 
 -- Tabla de usuarios administrador
-CREATE TABLE Admins (
-  ID_Admin INT PRIMARY KEY AUTO_INCREMENT,
-  Usuario VARCHAR(100) UNIQUE NOT NULL,
-  Contrasena VARCHAR(64) NOT NULL  
+CREATE TABLE admins (
+  id_admin INT PRIMARY KEY AUTO_INCREMENT,
+  usuario VARCHAR(100) UNIQUE NOT NULL,
+  contrasena VARCHAR(64) NOT NULL  
 );
 
 -- Tabla de formularios
-CREATE TABLE Formularios (
-    ID_Formulario INTEGER PRIMARY KEY auto_increment,
-    ID_Paciente INTEGER NOT NULL,
-    ID_TipoFormulario INTEGER NOT NULL,
-    Fecha_Respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
-    FOREIGN KEY (ID_TipoFormulario) REFERENCES TiposFormulario(ID_TipoFormulario)
+CREATE TABLE formularios (
+    id_formulario INTEGER PRIMARY KEY auto_increment,
+    id_paciente INTEGER NOT NULL,
+    id_tipoformulario INTEGER NOT NULL,
+    fecha_respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente),
+    FOREIGN KEY (id_tipoformulario) REFERENCES tipos_formulario(id_tipoformulario)
 );
 
 -- Tabla de preguntas del formulario
-CREATE TABLE Preguntas (
-    ID_Pregunta INTEGER PRIMARY KEY,
-    ID_TipoFormulario INTEGER NOT NULL,
-    Texto VARCHAR(512) NOT NULL,
-    FOREIGN KEY (ID_TipoFormulario) REFERENCES TiposFormulario(ID_TipoFormulario)
+CREATE TABLE preguntas (
+    id_pregunta INTEGER PRIMARY KEY,
+    id_tipoformulario INTEGER NOT NULL,
+    texto VARCHAR(512) NOT NULL,
+    FOREIGN KEY (id_tipoformulario) REFERENCES tipos_formulario(id_tipoformulario)
 );
 
 -- Tabla de respuestas a las preguntas del formulario
-CREATE TABLE Respuestas (
-    ID_Respuesta INTEGER PRIMARY KEY auto_increment,
-    ID_Pregunta INTEGER NOT NULL,
-    ID_Paciente INTEGER NOT NULL,
-    Respuesta VARCHAR(200) NOT NULL,
-    FOREIGN KEY (ID_Pregunta) REFERENCES Preguntas(ID_Pregunta),
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente)
+CREATE TABLE respuestas (
+    id_respuesta INTEGER PRIMARY KEY auto_increment,
+    id_pregunta INTEGER NOT NULL,
+    id_paciente INTEGER NOT NULL,
+    respuesta VARCHAR(200) NOT NULL,
+    FOREIGN KEY (id_pregunta) REFERENCES preguntas(id_pregunta),
+    FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente)
 );
 
 -- Tabla de Resultados para los formularios
-CREATE TABLE Resultados (
-    ID_Resultado INTEGER PRIMARY KEY auto_increment,
-    ID_Formulario INTEGER NOT NULL,
-    Puntuacion INTEGER NOT NULL,
-    Categoria VARCHAR(50) NOT NULL, 
-    FOREIGN KEY (ID_Formulario) REFERENCES Formularios(ID_Formulario)
+CREATE TABLE resultados (
+    id_resultado INTEGER PRIMARY KEY auto_increment,
+    id_formulario INTEGER NOT NULL,
+    puntuacion INTEGER NOT NULL,
+    categoria VARCHAR(50) NOT NULL, 
+    FOREIGN KEY (id_formulario) REFERENCES formularios(id_formulario)
 );
 
-CREATE TABLE Tratamientos (
-    ID_Tratamiento INTEGER PRIMARY KEY auto_increment,
-    Nivel VARCHAR(20) NOT NULL
+CREATE TABLE tratamientos (
+    id_tratamiento INTEGER PRIMARY KEY auto_increment,
+    nivel VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE AsignacionesSistemaExperto (
-    ID_Asignacion INTEGER PRIMARY KEY auto_increment,
-    ID_Paciente INTEGER NOT NULL,
-    ID_Tratamiento INTEGER NOT NULL,
-    Log_sistema TEXT NOT NULL,
-    FechaEvaluacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
-    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos(ID_Tratamiento)
+CREATE TABLE asignacionessistemaexperto (
+    id_asignacion INTEGER PRIMARY KEY auto_increment,
+    id_paciente INTEGER NOT NULL,
+    id_tratamiento INTEGER NOT NULL,
+    log_sistema TEXT NOT NULL,
+    fechaevaluacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente),
+    FOREIGN KEY (id_tratamiento) REFERENCES tratamientos(id_tratamiento)
 );
 
-CREATE TABLE Habilidades (
-    ID_Habilidad INTEGER PRIMARY KEY auto_increment,
-    Nombre VARCHAR(100) NOT NULL
+CREATE TABLE habilidades (
+    id_habilidad INTEGER PRIMARY KEY auto_increment,
+    nombre VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE Actividades (
-    ID_Actividad INTEGER PRIMARY KEY auto_increment,
-    ID_Habilidad INTEGER NOT NULL,
-    Nombre VARCHAR(100) NOT NULL,
-    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad)
+CREATE TABLE actividades (
+    id_actividad INTEGER PRIMARY KEY auto_increment,
+    id_habilidad INTEGER NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_habilidad) REFERENCES habilidades (id_habilidad)
 );
 
-CREATE TABLE Respuestas_Actividad (
-    ID_Respuesta INT PRIMARY KEY auto_increment,
-    ID_Pregunta INT,
-    ID_Paciente INT NOT NULL,
-    ID_Actividad INT NOT NULL,
-    Respuesta TEXT NOT NULL,
-    Fecha_Registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes(ID_Paciente),
-    FOREIGN KEY (ID_Actividad) REFERENCES Actividades(ID_Actividad)
+CREATE TABLE respuestas_actividad (
+    id_respuesta INT PRIMARY KEY auto_increment,
+    id_pregunta INT,
+    id_paciente INT NOT NULL,
+    id_actividad INT NOT NULL,
+    respuesta TEXT NOT NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente),
+    FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad)
 );
 
-CREATE TABLE Tratamiento_Habilidad_Actividad (
-    ID_Tratamiento INTEGER NOT NULL,
-    ID_Habilidad INTEGER NOT NULL,
-    ID_Actividad INTEGER NOT NULL,
-    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento),
-    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad),
-    FOREIGN KEY (ID_Actividad) REFERENCES Actividades (ID_Actividad)
+CREATE TABLE tratamiento_habilidad_actividad (
+    id_tratamiento INTEGER NOT NULL,
+    id_habilidad INTEGER NOT NULL,
+    id_actividad INTEGER NOT NULL,
+    FOREIGN KEY (id_tratamiento) REFERENCES tratamientos (id_tratamiento),
+    FOREIGN KEY (id_habilidad) REFERENCES habilidades (id_habilidad),
+    FOREIGN KEY (id_actividad) REFERENCES actividades (id_actividad)
 );
 
-CREATE TABLE Paciente_Tratamiento (
-    ID_Paciente INTEGER NOT NULL,
-    ID_Tratamiento INTEGER NOT NULL,
-    FechaInicio DATE NOT NULL,
-    PRIMARY KEY (ID_Paciente, ID_Tratamiento),
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
-    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento)
+CREATE TABLE paciente_tratamiento (
+    id_paciente INTEGER NOT NULL,
+    id_tratamiento INTEGER NOT NULL,
+    fechainicio DATE NOT NULL,
+    PRIMARY KEY (id_paciente, id_tratamiento),
+    FOREIGN KEY (id_paciente) REFERENCES pacientes (id_paciente),
+    FOREIGN KEY (id_tratamiento) REFERENCES tratamientos (id_tratamiento)
 );
 
-CREATE TABLE Paciente_Actividad (
-    ID_Paciente INTEGER NOT NULL,
-    ID_Actividad INTEGER NOT NULL,
-    FechaCompletada DATE,
-    Completada BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (ID_Paciente, ID_Actividad),
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
-    FOREIGN KEY (ID_Actividad) REFERENCES Actividades (ID_Actividad)
+CREATE TABLE paciente_actividad (
+    id_paciente INTEGER NOT NULL,
+    id_actividad INTEGER NOT NULL,
+    fechacompletada DATE,
+    completada BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (id_paciente, id_actividad),
+    FOREIGN KEY (id_paciente) REFERENCES pacientes (id_paciente),
+    FOREIGN KEY (id_actividad) REFERENCES actividades (id_actividad)
 );
 
-CREATE TABLE Paciente_Habilidad (
-    ID_Paciente INTEGER NOT NULL,
-    ID_Habilidad INTEGER NOT NULL,
-    FechaCompletada DATE,
-    Completada BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (ID_Paciente, ID_Habilidad),
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
-    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad)
+CREATE TABLE paciente_habilidad (
+    id_paciente INTEGER NOT NULL,
+    id_habilidad INTEGER NOT NULL,
+    fechacompletada DATE,
+    completada BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (id_paciente, id_habilidad),
+    FOREIGN KEY (id_paciente) REFERENCES pacientes (id_paciente),
+    FOREIGN KEY (id_habilidad) REFERENCES habilidades (id_habilidad)
 );
 
-CREATE TABLE ProgresoPaciente (
-    ID_Paciente INTEGER NOT NULL,
-    ID_Tratamiento INTEGER NOT NULL,
-    ID_Habilidad INTEGER,
-    ID_Actividad INTEGER,
+CREATE TABLE progreso_paciente (
+    id_paciente INTEGER NOT NULL,
+    id_tratamiento INTEGER NOT NULL,
+    id_habilidad INTEGER,
+    id_actividad INTEGER,
     FechaInicio DATE,
-    PRIMARY KEY (ID_Paciente),
-    FOREIGN KEY (ID_Paciente) REFERENCES Pacientes (ID_Paciente),
-    FOREIGN KEY (ID_Tratamiento) REFERENCES Tratamientos (ID_Tratamiento),
-    FOREIGN KEY (ID_Habilidad) REFERENCES Habilidades (ID_Habilidad),
-    FOREIGN KEY (ID_Actividad) REFERENCES Actividades (ID_Actividad)
+    PRIMARY KEY (id_paciente),
+    FOREIGN KEY (id_paciente) REFERENCES pacientes (id_paciente),
+    FOREIGN KEY (id_tratamiento) REFERENCES tratamientos (id_tratamiento),
+    FOREIGN KEY (id_habilidad) REFERENCES habilidades (id_habilidad),
+    FOREIGN KEY (id_actividad) REFERENCES actividades (id_actividad)
 );
 
 -- Insertar datos en las tablas de catálogo
-INSERT INTO NivelesEstudios (ID_NivelEstudios, Descripcion) VALUES
+INSERT INTO niveles_estudios (id_nivelestudios, descripcion) VALUES
 (1, 'No estudié'),
 (2, 'Primaria'),
 (3, 'Secundaria'),
@@ -221,7 +211,7 @@ INSERT INTO NivelesEstudios (ID_NivelEstudios, Descripcion) VALUES
 (7, 'Doctorado'),
 (8, 'Otro');
 
-INSERT INTO Ocupaciones (ID_Ocupacion, Descripcion) VALUES
+INSERT INTO ocupaciones (id_ocupacion, descripcion) VALUES
 (1, 'Encargado(a) del hogar'),
 (2, 'Estudiante'),
 (3, 'Empleado(a)'),
@@ -231,7 +221,7 @@ INSERT INTO Ocupaciones (ID_Ocupacion, Descripcion) VALUES
 (7, 'Jubilado(a)'),
 (8, 'Otro');
 
-INSERT INTO Residencias (ID_Residencia, Descripcion) VALUES
+INSERT INTO residencias (id_residencia, descripcion) VALUES
 (1, 'Aguascalientes'),
 (2, 'Baja California'),
 (3, 'Baja California Sur'),
@@ -266,7 +256,7 @@ INSERT INTO Residencias (ID_Residencia, Descripcion) VALUES
 (32, 'Zacatecas'),
 (33, 'Extranjero');
 
-INSERT INTO EstadosCiviles (ID_EstadoCivil, Descripcion) VALUES
+INSERT INTO estados_civiles (id_estadocivil, descripcion) VALUES
 (1, 'Soltero(a)'),
 (2, 'Unión libre'),
 (3, 'Casado(a)'),
@@ -275,18 +265,7 @@ INSERT INTO EstadosCiviles (ID_EstadoCivil, Descripcion) VALUES
 (6, 'Viudo(a)'),
 (7, 'Otro');
 
-INSERT INTO SexoCatalogo (Descripcion) VALUES
-('Mujer'),
-('Hombre'),
-('Prefiero no decirlo');
-
-INSERT INTO TratamientoCatalogo (Descripcion) VALUES
-('ninguno'),
-('psicológico'),
-('psiquiátrico'),
-('ambos');
-
-INSERT INTO TipoENTs (NombreENT) VALUES
+INSERT INTO tipo_ents (nombre_ent) VALUES
 ('Enfermedades cardiovasculares'),
 ('Diabetes'),
 ('Cáncer'),
@@ -295,7 +274,7 @@ INSERT INTO TipoENTs (NombreENT) VALUES
 ('Ninguno');
 
 -- Insertar los formularios iniciales en el catálogo
-INSERT INTO TiposFormulario (NombreFormulario) VALUES
+INSERT INTO tipos_formulario (nombreformulario) VALUES
 ('Inventario de Ansiedad de Beck (BAI)'),
 ('Inventario de Depresión de Beck (BDI-II)'),
 ('MINI - Apartado riesgo suicida'),
@@ -313,7 +292,7 @@ INSERT INTO TiposFormulario (NombreFormulario) VALUES
 ('SUS');
 
 -- Insertar las preguntas del BAI
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (1, 1, 'Hormigueo o entumecimiento'),
 (2, 1, 'Sensación de calor'),
 (3, 1, 'Temblor en las piernas'),
@@ -337,7 +316,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (21, 1, 'Sudoración (no debida al calor)');
 
 -- Insertar las preguntas del beck
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (22, 2, 'Tristeza'),
 (23, 2, 'Pesimismo'),
 (24, 2, 'Fracasos del pasado'),
@@ -361,7 +340,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (42, 2, 'Pérdida de interés en el sexo');
 
 -- Insertar las preguntas para el MINI apartado de riesgo suicida 
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (43, 3, '¿Ha pensado que sería mejor morirse o ha deseado estar muerto(a)?'),
 (44, 3, '¿Ha querido hacerse daño?'),
 (45, 3, '¿Ha pensado en el suicidio?'),
@@ -370,7 +349,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (48, 3, '¿Alguna vez ha intentado suicidarse?');
 
 -- Insertar las preguntas para el indice de bienestar
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (49, 4, '¿Me he sentido alegre y de buen ánimo?'),
 (50, 4, '¿Me he sentido tranquilo/a y relajado/a?'),
 (51, 4, '¿Me he sentido activo/a y con energía?'),
@@ -378,7 +357,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (53, 4, '¿Mi vida diaria ha tenido cosas interesantes para mí?');
 
 -- Insertar las preguntas para el de escala de estres
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (54, 5, '¿Con qué frecuencia has estado afectado/a por algo que ha ocurrido inesperadamente?'),
 (55, 5, '¿Con qué frecuencia te has sentido incapaz de controlar las cosas importantes de tu vida?'),
 (56, 5, '¿Con qué frecuencia te has sentido nervioso/a o estresado/a?'),
@@ -395,7 +374,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (67, 5, '¿Con qué frecuencia has sentido que las dificultades se acumulan tanto que no puedes superarlas?');
 
 -- Insertar las preguntas para el de escala de atencion plena
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (68, 6, 'Puedo sentir una emoción y no estar consciente de ella hasta tiempo después.'),
 (69, 6, 'Rompo o derramo cosas por descuido, al no poner atención, o porque estoy pensando en otra cosa.'),
 (70, 6, 'Se me hace difícil permanecer concentrado en lo que está sucediendo en un momento dado.'),
@@ -413,20 +392,20 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (82, 6, 'Como entre comidas sin estar consciente de que estoy comiendo.');
 
 -- Insertar las preguntas para la evaluacion APOI desfavorable
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (83, 7, 'Si quiero aprender habilidades para gestionar mejor mi vida, prefiero un terapeuta antes que una intervención psicológica online.'),
 (84, 7, 'Es más probable que me mantenga motivada/o con un terapeuta que con una intervención psicológica online.'),
 (85, 7, 'En situaciones de crisis, un terapeuta puede ayudarme mejor que una intervención psicológica online.');
 
 -- Insertar las preguntas para la evaluacion APOI favorable
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (86, 8, 'Una intervención psicológica online puede ayudarme a reconocer los problemas que tengo que enfrentar.'),
 (87, 8, 'Una intervención psicológica online puede inspirarme para abordar mejor mis problemas.'),
 (88, 8, 'Creo que el concepto de intervenciones psicológicas online tiene sentido.'),
 (89, 8, 'Tengo la sensación de que una intervención psicológica online puede ayudarme.');
 
 -- Insertar las preguntas para el indice de calidad de sueño de pitsburg
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (90, 9,  "Durante el último mes, ¿cuál ha sido, usualmente, su hora de acostarse?"),
 (91, 9, "Durante el último mes, ¿cuánto tiempo ha tardado en dormirse en las noches del último mes?"),
 (92, 9, "Durante el último mes, ¿a que hora se ha estado levantando por la mañana?"),
@@ -449,7 +428,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (109, 9, "Durante el último mes, ¿ha representado para usted mucho problema el “tener ánimos” para realizar alguna de las actividades detalladas en la pregunta anterior?");
 
 -- Insertar las preguntas para el de autocompasion
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (110, 10, 'Me desapruebo y me juzgo por mis defectos y limitaciones.'),
 (111, 10, 'Cuando me siento desanimado tiendo a obsesionarme y fijarme en todo lo que está mal.'),
 (112, 10, 'Cuando las cosas van mal para mí, veo las dificultades como una parte de la vida por la que todos pasan.'),
@@ -478,7 +457,7 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (135, 10, 'Intento ser comprensivo y paciente con aquellos aspectos de mi personalidad que no me gustan.');
 
 -- Insertar las preguntas para la entrevista con el Chatbot
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (136, 11, '¿Me gustaría saber si has estado en terapia psicológica antes?'),
 (137, 11, '¿Hace cuánto fue esa terapia, en meses?'),
 (138, 11, '¿Cuánto tiempo consideras que dedicas a la semana  a tu salud emocional (talleres, podcast, asesorías, etc)?'),
@@ -493,23 +472,23 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (147, 11, '¿Qué te gustaría lograr o mejorar con la práctica de mindfulness?');
 
 -- Insertar las preguntas para el cuestionario ASI Aceptabilidad
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (148, 12, "SerenaMente IA fue adecuada para mi"),
 (149, 12, "¿Cree que SerenaMente fue útil en su caso?"),
 (150, 12, "¿Cree que SerenaMente IA podría ser útil para tratar otros problemas psicológicos?");
 
 -- Insertar las preguntas para el cuestionario ASI Satisfacción
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (151, 13, "En general, ¿qué tan satisfecho(a) está con la forma en que SerenaMente IA ha tratado su problema?"),
 (152, 13, "¿Le ha ayudado SerenaMente IA en relación con un problema específico?");
 
 -- Insertar las preguntas para el cuestionario ASI Idoneidad
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (153, 14, "¿Las estrategias terapéuticas/ tareas/ actividades que se utilizaron a lo largo de esta aplicación fueron entendibles para usted?"),
 (154, 14, "Los contenidos de la aplicación le parecieron interesantes."),
 (155, 14, "¿Qué modificaría?");
 
-INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
+INSERT INTO preguntas(id_pregunta, id_tipoformulario, texto) VALUES
 (156, 15, "Creo que me gustará usar con frecuencia este sistema"),
 (157, 15, "El sistema me pareció poco complejo en su uso"),
 (158, 15, "Creo que es fácil utilizar el sistema"),
@@ -522,13 +501,13 @@ INSERT INTO Preguntas(ID_Pregunta, ID_TipoFormulario, Texto) VALUES
 (165, 15, "Necesito aprender muchas cosas antes de manejarme en el sistema");
 
 -- Crear los valores de los diferentes tratamientos
-INSERT INTO Tratamientos(ID_Tratamiento, Nivel) VALUES
+INSERT INTO tratamientos(id_tratamiento, nivel) VALUES
 (1, "Leve"),
 (2, "Moderado"),
 (3, "Alto");
 
 -- Insertar datos de todas las habilidades
-INSERT INTO Habilidades (ID_Habilidad, Nombre) VALUES
+INSERT INTO habilidades (id_habilidad, nombre) VALUES
 (1,"Comenzar a trabajar en mi"),
 (2,"Ser y estar"),
 (3,"De la Distracción a la Conciencia"),
@@ -540,7 +519,7 @@ INSERT INTO Habilidades (ID_Habilidad, Nombre) VALUES
 
 
 -- Insertar los valores de las habilidades
-INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
+INSERT INTO actividades (id_actividad, id_habilidad, nombre) VALUES
 (1,1,"Qué es mindfulness y cómo puede ayudarme"),
 (2,1,"Ya sé que es mindfulness, ¿qué sigue?"),
 (3,1,"Respiración Consciente"),
@@ -571,7 +550,7 @@ INSERT INTO Actividades (ID_Actividad, ID_Habilidad, Nombre) VALUES
 (28,8,"Final del Tratamiento");
 
 -- Hacer las insercion de valores para el tratamiento 1 hasta la habilidad 7
-INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
+INSERT INTO tratamiento_habilidad_actividad (id_tratamiento, id_habilidad, id_actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (1,1,1),
 (1,1,2),
@@ -592,7 +571,7 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 
 
 -- Hacer las insercion de valores para el tratamiento 2 hasta la habilidad 7
-INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
+INSERT INTO tratamiento_habilidad_actividad (id_tratamiento, id_habilidad, id_actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (2,1,1),
 (2,1,2),
@@ -618,7 +597,7 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (2,8,28);
 
 -- Hacer las insercion de valores para el tratamiento 3 hasta la habilidad 7
-INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Actividad) VALUES
+INSERT INTO tratamiento_habilidad_actividad (id_tratamiento, id_habilidad, id_actividad) VALUES
 -- Actividades que se mostraran de las habilidades 0 para cada tratamiento
 (3,1,1),
 (3,1,2),
@@ -650,5 +629,5 @@ INSERT INTO Tratamiento_Habilidad_Actividad (ID_Tratamiento, ID_Habilidad, ID_Ac
 (3,8,28);
 
 -- Agregamos el usuario 1 de administrador 
-INSERT INTO Admins (Usuario, Contrasena)
-VALUES ('admin', '4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2');
+INSERT INTO admins (usuario, contrasena) VALUES 
+('admin', '4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2');
