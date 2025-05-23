@@ -52,7 +52,7 @@ Nos complace informarle que su registro ha sido exitoso. A continuación, encont
 Verifica tu correo: {enlace}
 
 Si tiene alguna pregunta o necesita asistencia adicional, no dude en 
-ponerse en contacto con nuestro equipo de soporte a través de [correo de contacto].
+ponerse en contacto con nuestro equipo de soporte a través de serenamente@iztacala.unam.mx
 
 Reciba un cordial saludo.
 Atentamente
