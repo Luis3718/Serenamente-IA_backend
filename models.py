@@ -1,139 +1,153 @@
-from sqlalchemy import Column, Integer, String, Date, Text, DateTime, Boolean, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Text, Boolean, TIMESTAMP, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from database import Base
 
-class Paciente(Base):
-    __tablename__ = "Pacientes"
+class paciente(Base):
+    __tablename__ = "pacientes"
 
-    ID_Paciente = Column(Integer, primary_key=True, index=True)
-    Nombre = Column(String(100), nullable=False)
-    Apellidos = Column(String(100), nullable=False)
-    Correo = Column(String(100), unique=True, nullable=False)
-    CorreoAlternativo = Column(String(100))
-    Contraseña = Column(String(255), nullable=False)
-    Celular = Column(String(10), nullable=False)
-    Sexo = Column(String(20), nullable=False)
-    FechaNacimiento = Column(Date, nullable=False)
-    ID_NivelEstudios = Column(Integer, nullable=False)
-    ID_Ocupacion = Column(Integer, nullable=False)
-    ID_Residencia = Column(Integer, nullable=False)
-    ID_EstadoCivil = Column(Integer, nullable=False)
-    EnTratamiento = Column(String(20), nullable=False)
-    ID_TipoENT = Column(String(20), nullable=False)
-    TomaMedicamentos = Column(String(255))
-    NombreMedicacion = Column(String(255))
-    AvisoPrivacidad = Column(Boolean, nullable=False)
-    CartaConsentimiento = Column(Boolean, nullable=False)
-    EsApto = Column(Boolean, default=False, nullable=False) 
-    CorreoVerificado = Column(Boolean, default=False, nullable=False)
-    formulario_contestado = Column(Boolean, default=False, nullable=False) 
-    entrevista_contestada = Column(Boolean, default=False, nullable=False)  
-    en_pausa = Column(Boolean, default=False, nullable=False)  
+    id_paciente = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(100), nullable=False)
+    apellidos = Column(String(100), nullable=False)
+    correo = Column(String(100), unique=True, nullable=False)
+    correoalternativo = Column(String(100))
+    contrasena = Column(String(255), nullable=False)
+    celular = Column(String(10), nullable=False)
+    sexo = Column(String(20), nullable=False)
+    fechanacimiento = Column(Date, nullable=False)
+    id_nivelestudios = Column(Integer, nullable=False)
+    id_ocupacion = Column(Integer, nullable=False)
+    id_residencia = Column(Integer, nullable=False)
+    id_estadocivil = Column(Integer, nullable=False)
+    id_tipoent = Column(Integer, nullable=False)
+    entratamiento = Column(String(20), nullable=False)
+    tomamedicamentos = Column(String(255))
+    nombremedicacion = Column(String(255))
+    avisoprivacidad = Column(Boolean, nullable=False)
+    cartaconsentimiento = Column(Boolean, nullable=False)
+    fecharegistro = Column(TIMESTAMP, server_default=func.current_timestamp())
+    esapto = Column(Boolean, default=False, nullable=False)
+    correoverificado = Column(Boolean, default=False, nullable=False)
+    formulario_contestado = Column(Boolean, default=False, nullable=False)
+    entrevista_contestada = Column(Boolean, default=False, nullable=False)
+    en_pausa = Column(Boolean, default=False, nullable=False)
 
-class Admin(Base):
-    __tablename__ = "Admins"
+class admin(Base):
+    __tablename__ = "admins"
 
-    ID_Admin = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    Usuario = Column(String(100), unique=True, nullable=False)
-    Contrasena = Column(String(64), nullable=False) 
+    id_admin = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    usuario = Column(String(100), unique=True, nullable=False)
+    contrasena = Column(String(64), nullable=False)
 
-class TiposFormulario(Base):
-    __tablename__ = 'TiposFormulario'
-    ID_TipoFormulario = Column(Integer, primary_key=True)
-    NombreFormulario = Column(String(255), nullable=False)
+class tipos_formulario(Base):
+    __tablename__ = "tipos_formulario"
 
-class Formulario(Base):
-    __tablename__ = 'Formularios'
-    ID_Formulario = Column(Integer, primary_key=True, autoincrement=True)
-    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), nullable=False)
-    ID_TipoFormulario = Column(Integer, ForeignKey('TiposFormulario.ID_TipoFormulario'), nullable=False)
-    Fecha_Respuesta = Column(TIMESTAMP, default=func.current_timestamp())
+    id_tipoformulario = Column(Integer, primary_key=True, autoincrement=True)
+    nombreformulario = Column(String(255), nullable=False)
 
-class Pregunta(Base):
-    __tablename__ = 'Preguntas'
-    ID_Pregunta = Column(Integer, primary_key=True)
-    ID_TipoFormulario = Column(Integer, ForeignKey('TiposFormulario.ID_TipoFormulario'), nullable=False)
-    Texto = Column(String(255), nullable=False)
+class formulario(Base):
+    __tablename__ = "formularios"
 
-class Respuesta(Base):
-    __tablename__ = 'Respuestas'
-    ID_Respuesta = Column(Integer, primary_key=True, autoincrement=True)
-    ID_Pregunta = Column(Integer, ForeignKey('Preguntas.ID_Pregunta'), nullable=False)
-    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), nullable=False)
-    Respuesta = Column(String, nullable=False)
+    id_formulario = Column(Integer, primary_key=True, autoincrement=True)
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), nullable=False)
+    id_tipoformulario = Column(Integer, ForeignKey("tipos_formulario.id_tipoformulario"), nullable=False)
+    fecha_respuesta = Column(TIMESTAMP, server_default=func.current_timestamp())
 
-class Resultado(Base):
-    __tablename__ = 'Resultados'
-    ID_Resultado = Column(Integer, primary_key=True, autoincrement=True)
-    ID_Formulario = Column(Integer, ForeignKey('Formularios.ID_Formulario'), nullable=False)
-    Puntuacion = Column(Integer, nullable=False)
-    Categoria = Column(String(50), nullable=False)  # Bajo, Medio, Alto
+class pregunta(Base):
+    __tablename__ = "preguntas"
 
-class AsignacionSistemaExperto(Base):
-    __tablename__ = "AsignacionesSistemaExperto"
+    id_pregunta = Column(Integer, primary_key=True)
+    id_tipoformulario = Column(Integer, ForeignKey("tipos_formulario.id_tipoformulario"), nullable=False)
+    texto = Column(String(512), nullable=False)
 
-    ID_Asignacion = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    ID_Paciente = Column(Integer, ForeignKey("Pacientes.ID_Paciente"), nullable=False)
-    ID_Tratamiento = Column(Integer, ForeignKey("Tratamientos.ID_Tratamiento"), nullable=False)
-    Log_sistema = Column(Text, nullable=False)
-    FechaEvaluacion = Column(DateTime, default=func.now())
+class respuesta(Base):
+    __tablename__ = "respuestas"
 
-class Tratamiento(Base):
-    __tablename__ = 'Tratamientos'
-    ID_Tratamiento = Column(Integer, primary_key=True, autoincrement=True)
-    Nivel = Column(String(20), nullable=False)
+    id_respuesta = Column(Integer, primary_key=True, autoincrement=True)
+    id_pregunta = Column(Integer, ForeignKey("preguntas.id_pregunta"), nullable=False)
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), nullable=False)
+    respuesta = Column(String(200), nullable=False)
 
-class Habilidad(Base):
-    __tablename__ = 'Habilidades'
-    ID_Habilidad = Column(Integer, primary_key=True, autoincrement=True)
-    Nombre = Column(String(100), nullable=False)
+class resultado(Base):
+    __tablename__ = "resultados"
 
-class Actividad(Base):
-    __tablename__ = 'Actividades'
-    ID_Actividad = Column(Integer, primary_key=True, autoincrement=True)
-    ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), nullable=False)
-    Nombre = Column(String(100), nullable=False)
+    id_resultado = Column(Integer, primary_key=True, autoincrement=True)
+    id_formulario = Column(Integer, ForeignKey("formularios.id_formulario"), nullable=False)
+    puntuacion = Column(Integer, nullable=False)
+    categoria = Column(String(50), nullable=False)
 
-class RespuestaActividad(Base):
-    __tablename__ = "Respuestas_Actividad"
+class asignacion_sistema_experto(Base):
+    __tablename__ = "asignacionessistemaexperto"
 
-    ID_Respuesta = Column(Integer, primary_key=True, index=True)
-    ID_Pregunta = Column(Integer, nullable=True)
-    ID_Paciente = Column(Integer, ForeignKey("Pacientes.ID_Paciente"), nullable=False)
-    ID_Actividad = Column(Integer, ForeignKey("Actividades.ID_Actividad"), nullable=False)
-    Respuesta = Column(String(200), nullable=False)
-    Fecha_Registro = Column(Date, nullable=False)
+    id_asignacion = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), nullable=False)
+    id_tratamiento = Column(Integer, ForeignKey("tratamientos.id_tratamiento"), nullable=False)
+    log_sistema = Column(Text, nullable=False)
+    fechaevaluacion = Column(TIMESTAMP, server_default=func.current_timestamp())
 
-class Tratamiento_Habilidad_Actividad(Base):
-    __tablename__ = 'tratamiento_habilidad_actividad'
-    ID_Tratamiento = Column(Integer, ForeignKey('tratamientos.ID_Tratamiento'), primary_key=True)
-    ID_Habilidad = Column(Integer, ForeignKey('habilidades.ID_Habilidad'), primary_key=True)
-    ID_Actividad = Column(Integer, ForeignKey('actividades.ID_Actividad'), primary_key=True)
+class tratamiento(Base):
+    __tablename__ = "tratamientos"
 
-class Paciente_Tratamiento(Base):
-    __tablename__ = 'Paciente_Tratamiento'
-    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
-    ID_Tratamiento = Column(Integer, ForeignKey('Tratamientos.ID_Tratamiento'), primary_key=True)
-    FechaInicio = Column(Date, nullable=False)
+    id_tratamiento = Column(Integer, primary_key=True, autoincrement=True)
+    nivel = Column(String(20), nullable=False)
 
-class Paciente_Actividad(Base):
-    __tablename__ = 'Paciente_Actividad'
-    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
-    ID_Actividad = Column(Integer, ForeignKey('Actividades.ID_Actividad'), primary_key=True)
-    FechaCompletada = Column(Date)
-    Completada = Column(Boolean, default=False)
+class habilidad(Base):
+    __tablename__ = "habilidades"
 
-class Paciente_Habilidad(Base):
-    __tablename__ = 'Paciente_Habilidad'
-    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
-    ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'), primary_key=True)
-    FechaCompletada = Column(Date)
-    Completada = Column(Boolean, default=False)
+    id_habilidad = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(100), nullable=False)
 
-class ProgresoPaciente(Base):
-    __tablename__ = 'ProgresoPaciente'
-    ID_Paciente = Column(Integer, ForeignKey('Pacientes.ID_Paciente'), primary_key=True)
-    ID_Tratamiento = Column(Integer, ForeignKey('Tratamientos.ID_Tratamiento'))
-    ID_Habilidad = Column(Integer, ForeignKey('Habilidades.ID_Habilidad'))  # Asegúrate de que el nombre sea correcto
-    ID_Actividad = Column(Integer, ForeignKey('Actividades.ID_Actividad'))
-    FechaInicio = Column(Date)
+class actividad(Base):
+    __tablename__ = "actividades"
+
+    id_actividad = Column(Integer, primary_key=True, autoincrement=True)
+    id_habilidad = Column(Integer, ForeignKey("habilidades.id_habilidad"), nullable=False)
+    nombre = Column(String(100), nullable=False)
+
+class respuesta_actividad(Base):
+    __tablename__ = "respuestas_actividad"
+
+    id_respuesta = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    id_pregunta = Column(Integer, nullable=True)
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), nullable=False)
+    id_actividad = Column(Integer, ForeignKey("actividades.id_actividad"), nullable=False)
+    respuesta = Column(Text, nullable=False)
+    fecha_registro = Column(DateTime, server_default=func.current_timestamp())
+
+class tratamiento_habilidad_actividad(Base):
+    __tablename__ = "tratamiento_habilidad_actividad"
+
+    id_tratamiento = Column(Integer, ForeignKey("tratamientos.id_tratamiento"), primary_key=True)
+    id_habilidad = Column(Integer, ForeignKey("habilidades.id_habilidad"), primary_key=True)
+    id_actividad = Column(Integer, ForeignKey("actividades.id_actividad"), primary_key=True)
+
+class paciente_tratamiento(Base):
+    __tablename__ = "paciente_tratamiento"
+
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), primary_key=True)
+    id_tratamiento = Column(Integer, ForeignKey("tratamientos.id_tratamiento"), primary_key=True)
+    fechainicio = Column(Date, nullable=False)
+
+class paciente_actividad(Base):
+    __tablename__ = "paciente_actividad"
+
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), primary_key=True)
+    id_actividad = Column(Integer, ForeignKey("actividades.id_actividad"), primary_key=True)
+    fechacompletada = Column(Date)
+    completada = Column(Boolean, default=False)
+
+class paciente_habilidad(Base):
+    __tablename__ = "paciente_habilidad"
+
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), primary_key=True)
+    id_habilidad = Column(Integer, ForeignKey("habilidades.id_habilidad"), primary_key=True)
+    fechacompletada = Column(Date)
+    completada = Column(Boolean, default=False)
+
+class progreso_paciente(Base):
+    __tablename__ = "progreso_paciente"
+
+    id_paciente = Column(Integer, ForeignKey("pacientes.id_paciente"), primary_key=True)
+    id_tratamiento = Column(Integer, ForeignKey("tratamientos.id_tratamiento"))
+    id_habilidad = Column(Integer, ForeignKey("habilidades.id_habilidad"))
+    id_actividad = Column(Integer, ForeignKey("actividades.id_actividad"))
+    fechainicio = Column(Date)

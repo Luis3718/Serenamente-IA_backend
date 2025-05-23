@@ -1,17 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import HTMLResponse
-from itsdangerous import URLSafeTimedSerializer
-from correo import verificar_token_verificacion
-from correo import enviar_correo_recuperacion
-from sqlalchemy.orm import Session
-from database import get_db
-from models import Paciente
-from pydantic import BaseModel
 import hashlib
 import jwt
-from datetime import datetime, timedelta
+from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBearer
-from fastapi import Security
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+from models import paciente as Paciente
+from database import get_db
+from correo import verificar_token_verificacion, enviar_correo_recuperacion
+from schemas import login_request, forgot_password_request, reset_password_request
 
 router = APIRouter(
     prefix="/auth",
@@ -20,17 +17,6 @@ router = APIRouter(
 
 SECRET_KEY = "HBAFIQBbhb2u3412bHB"  # Usa una clave secreta segura y guárdala en un lugar seguro
 ALGORITHM = "HS256"
-
-class LoginRequest(BaseModel):
-    Correo: str
-    Contraseña: str
-
-class ForgotPasswordRequest(BaseModel):
-    Correo: str
-
-class ResetPasswordRequest(BaseModel):
-    Token: str
-    NuevaContraseña: str
 
 security = HTTPBearer()
 
@@ -44,29 +30,28 @@ def obtener_usuario_actual(token: str = Security(security)):
         raise HTTPException(status_code=401, detail="Token inválido")
 
 @router.post("/login")
-def login(request: LoginRequest, db: Session = Depends(get_db)):
-    usuario = db.query(Paciente).filter(Paciente.Correo == request.Correo).first()
+def login(request: login_request, db: Session = Depends(get_db)):
+    usuario = db.query(Paciente).filter(Paciente.correo == request.correo).first()
 
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    hashed_password = hashlib.sha256(request.Contraseña.encode("utf-8")).hexdigest()
-    if usuario.Contraseña != hashed_password:
+    hashed_password = hashlib.sha256(request.contrasena.encode("utf-8")).hexdigest()
+    if usuario.contrasena != hashed_password:
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
-    if not usuario.EsApto:
+    if not usuario.esapto:
         raise HTTPException(status_code=403, detail="No estás autorizado para usar el sistema")
 
-    if not usuario.CorreoVerificado:
+    if not usuario.correoverificado:
         raise HTTPException(status_code=403, detail="Debes verificar tu correo para usar el sistema")
- 
-    # Crear el token JWT con el estado del formulario
+
     payload = {
-        "id": usuario.ID_Paciente,
-        "nombre": usuario.Nombre,
-        "formulario_contestado": usuario.formulario_contestado,  # Agregar el estado del formulario
+        "id": usuario.id_paciente,
+        "nombre": usuario.nombre,
+        "formulario_contestado": usuario.formulario_contestado,
         "entrevista_contestada": usuario.entrevista_contestada,
-        "exp": datetime.utcnow() + timedelta(hours=2)  # Expira en 2 horas
+        "exp": datetime.utcnow() + timedelta(hours=2)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -77,18 +62,17 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         "entrevista_contestada": usuario.entrevista_contestada
     }
 
-    
 @router.get("/verify")
 def verificar_correo(token: str, db: Session = Depends(get_db)):
     correo = verificar_token_verificacion(token)
     if not correo:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
 
-    usuario = db.query(Paciente).filter(Paciente.Correo == correo).first()
+    usuario = db.query(Paciente).filter(Paciente.correo == correo).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    usuario.CorreoVerificado = True
+    usuario.correoverificado = True
     db.commit()
     content = open("verify_success.html", encoding="utf-8").read()
     return HTMLResponse(content=content, status_code=200)
@@ -98,23 +82,28 @@ def verificar_token_autenticado(usuario: dict = Depends(obtener_usuario_actual))
     return {"message": "Token válido", "usuario": usuario}
 
 @router.post("/update-form-status")
-def actualizar_estado_formulario(usuario: Paciente = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
-    usuario.formulario_contestado = True
+def actualizar_estado_formulario(usuario: dict = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    db_usuario = db.query(Paciente).filter(Paciente.id_paciente == usuario["id"]).first()
+    if not db_usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    db_usuario.formulario_contestado = True
     db.commit()
+    db.refresh(db_usuario)
+
     return {"message": "Formulario contestado con éxito"}
 
 @router.post("/forgot-password")
-def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    usuario = db.query(Paciente).filter(Paciente.Correo == request.Correo).first()
+def forgot_password(request: forgot_password_request, db: Session = Depends(get_db)):
+    usuario = db.query(Paciente).filter(Paciente.correo == request.correo).first()
 
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    if not usuario.CorreoVerificado:
+    if not usuario.correoverificado:
         raise HTTPException(status_code=403, detail="Debes verificar tu correo antes de recuperar tu contraseña")
 
-    # Enviar correo de recuperación
-    enviar_correo_recuperacion(usuario.Correo)
+    enviar_correo_recuperacion(usuario.correo)
     return {"message": "Instrucciones para recuperar tu contraseña fueron enviadas a tu correo"}
 
 @router.get("/reset-password")
@@ -129,23 +118,20 @@ def reset_password_page(token: str):
     return HTMLResponse(content=content, status_code=200)
 
 @router.post("/reset-password")
-def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
+def reset_password(request: reset_password_request, db: Session = Depends(get_db)):
     try:
-        # Validar el token
-        correo = verificar_token_verificacion(request.Token)
+        correo = verificar_token_verificacion(request.token)
         if not correo:
             raise HTTPException(status_code=400, detail="Token inválido o expirado")
     except Exception:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
 
-    # Buscar al usuario por correo
-    usuario = db.query(Paciente).filter(Paciente.Correo == correo).first()
+    usuario = db.query(Paciente).filter(Paciente.correo == correo).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # Actualizar la contraseña
-    nueva_contraseña_hashed = hashlib.sha256(request.NuevaContraseña.encode("utf-8")).hexdigest()
-    usuario.Contraseña = nueva_contraseña_hashed
+    nueva_contrasena_hashed = hashlib.sha256(request.nuevacontrasena.encode("utf-8")).hexdigest()
+    usuario.contrasena = nueva_contrasena_hashed
     db.commit()
 
     return {"message": "Contraseña actualizada exitosamente"}

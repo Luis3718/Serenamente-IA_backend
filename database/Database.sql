@@ -40,7 +40,7 @@ CREATE TABLE pacientes (
     apellidos VARCHAR(100) NOT NULL,
     correo VARCHAR(100) NOT NULL UNIQUE,
     correoalternativo VARCHAR(100),
-    contraseña VARCHAR(255) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
     celular CHAR(10) NOT NULL,
     sexo VARCHAR(20) NOT NULL,
     fechanacimiento DATE NOT NULL,

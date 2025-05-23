@@ -2,217 +2,240 @@ from pydantic import BaseModel, EmailStr
 from datetime import date, datetime
 from typing import Optional, List
 
-class PacienteBase(BaseModel):
-    Nombre: str
-    Apellidos: str
-    Correo: EmailStr
-    CorreoAlternativo: Optional[EmailStr] = None
-    Celular: str
-    Sexo: str
-    FechaNacimiento: date
-    ID_NivelEstudios: int
-    ID_Ocupacion: int
-    ID_Residencia: int
-    ID_EstadoCivil: int
-    EnTratamiento: str
-    ID_TipoENT: int
-    TomaMedicamentos: Optional[str] = None
-    NombreMedicacion: Optional[str] = None
-    AvisoPrivacidad: bool
-    CartaConsentimiento: bool
-    EsApto: Optional[bool] = None  
-    CorreoVerificado: Optional[bool] = None  
-    formulario_contestado: Optional[bool] = None  
-    entrevista_contestada: Optional[bool] = None  
-    en_pausa: Optional[bool] = None  
+class paciente_base(BaseModel):
+    nombre: str
+    apellidos: str
+    correo: EmailStr
+    correoalternativo: Optional[EmailStr] = None
+    celular: str
+    sexo: str
+    fechanacimiento: date
+    id_nivelestudios: int
+    id_ocupacion: int
+    id_residencia: int
+    id_estadocivil: int
+    entratamiento: str
+    id_tipoent: int
+    tomamedicamentos: Optional[str] = None
+    nombremedicacion: Optional[str] = None
+    avisoprivacidad: bool
+    cartaconsentimiento: bool
+    esapto: Optional[bool] = None
+    correoverificado: Optional[bool] = None
+    formulario_contestado: Optional[bool] = None
+    entrevista_contestada: Optional[bool] = None
+    en_pausa: Optional[bool] = None
 
 
-class PacienteCreate(PacienteBase):
-    Contraseña: str
-    EsApto: Optional[bool] = None  
+class paciente_create(paciente_base):
+    contrasena: str
+    esapto: Optional[bool] = None
 
-class Paciente(PacienteBase):
-    ID_Paciente: int
+class paciente(paciente_base):
+    id_paciente: int
 
-    class Config:
-        from_attributes = True  
+    model_config = {
+        "from_attributes": True
+    }
 
-class PerfilUpdate(BaseModel):
-    Nombre: str = None
-    Apellidos: str = None
-    Celular: str = None
+class perfil_update(BaseModel):
+    nombre: Optional[str] = None
+    apellidos: Optional[str] = None
+    celular: Optional[str] = None
 
-class PacienteOut(BaseModel):
-    ID_Paciente: int
-    Nombre: str
-    Apellidos: str
-    Correo: str
-    Sexo: str
-    FechaNacimiento: date
+class paciente_out(BaseModel):
+    id_paciente: int
+    nombre: str
+    apellidos: str
+    correo: str
+    sexo: str
+    fechanacimiento: date
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class PacienteAdminFullUpdate(BaseModel):
-    Nombre: Optional[str]
-    Apellidos: Optional[str]
-    Correo: Optional[str]
-    SegundoCorreo: Optional[str]
-    Sexo: Optional[str]
-    FechaNacimiento: Optional[date]
-    NuevaContrasena: Optional[str]  # En texto plano (la hashearemos)
+class paciente_admin_full_update(BaseModel):
+    nombre: Optional[str]
+    apellidos: Optional[str]
+    correo: Optional[str]
+    correoalternativo: Optional[str]
+    sexo: Optional[str]
+    fechanacimiento: Optional[date]
+    nuevacontrasena: Optional[str]
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class AdminLogin(BaseModel):
+class login_request(BaseModel):
+    correo: str
+    contrasena: str
+
+class forgot_password_request(BaseModel):
+    correo: str
+
+class reset_password_request(BaseModel):
+    token: str
+    nuevacontrasena: str
+
+class admin_login(BaseModel):
     usuario: str
     contrasena: str
 
-class AdminCreate(BaseModel):
+class admin_create(BaseModel):
     usuario: str
     contrasena: str
 
-class FormularioBase(BaseModel):
-    ID_Paciente: int
-    ID_TipoFormulario: int
-    Fecha_Respuesta: datetime = None
+class formulario_base(BaseModel):
+    id_paciente: int
+    id_tipoformulario: int
+    fecha_respuesta: Optional[datetime] = None
 
-class FormularioCreate(FormularioBase):
+class formulario_create(formulario_base):
     pass
 
-class Formulario(FormularioBase):
-    ID_Formulario: int
+class formulario(formulario_base):
+    id_formulario: int
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class PreguntaBase(BaseModel):
-    ID_TipoFormulario: int
-    Texto: str
+class pregunta_base(BaseModel):
+    id_tipoformulario: int
+    texto: str
 
-class PreguntaCreate(PreguntaBase):
+class pregunta_create(pregunta_base):
     pass
 
-class Pregunta(PreguntaBase):
-    ID_Pregunta: int
+class pregunta(pregunta_base):
+    id_pregunta: int
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class RespuestaBase(BaseModel):
-    ID_Pregunta: int
-    ID_Paciente: int
-    Respuesta: str
+class respuesta_base(BaseModel):
+    id_pregunta: int
+    id_paciente: int
+    respuesta: str
 
-class RespuestaCreate(RespuestaBase):
+class respuesta_create(respuesta_base):
     pass
 
-class Respuesta(RespuestaBase):
-    ID_Respuesta: int
+class respuesta(respuesta_base):
+    id_respuesta: int
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class ResultadoBase(BaseModel):
-    ID_Formulario: int
-    Puntuacion: int
-    Categoria: str  # Bajo, Medio, Alto
+class resultado_base(BaseModel):
+    id_formulario: int
+    puntuacion: int
+    categoria: str  # Bajo, Medio, Alto
 
-class ResultadoCreate(ResultadoBase):
+class resultado_create(resultado_base):
     pass
 
-class Resultado(ResultadoBase):
-    ID_Resultado: int
+class resultado(resultado_base):
+    id_resultado: int
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class AsignacionCreate(BaseModel):
-    ID_Paciente: int
-    ID_Tratamiento: int
-    Log_sistema: List[str]  # lista de pasos aplicados
+class asignacion_create(BaseModel):
+    id_paciente: int
+    id_tratamiento: int
+    log_sistema: List[str]
 
-class AsignacionOut(BaseModel):
-    ID_Asignacion: int
-    ID_Paciente: int
-    ID_Tratamiento: int
-    Log_sistema: str
-    FechaEvaluacion: datetime
+class asignacion_out(BaseModel):
+    id_asignacion: int
+    id_paciente: int
+    id_tratamiento: int
+    log_sistema: str
+    fechaevaluacion: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class TratamientoBase(BaseModel):
-    Nivel: str
+class tratamiento_base(BaseModel):
+    nivel: str
 
-class HabilidadBase(BaseModel):
-    ID_Habilidad: int
-    Nombre: str
+class habilidad_base(BaseModel):
+    id_habilidad: int
+    nombre: str
 
-    class Config:
-        orm_mode = True  # Usar from_attributes en Pydantic v2
+    model_config = {
+        "from_attributes": True
+    }
 
-class ActividadBase(BaseModel):
-    ID_Habilidad: int
-    Nombre: str
+class actividad_base(BaseModel):
+    id_habilidad: int
+    nombre: str
 
-class ActividadConID(BaseModel):
-    ID_Actividad: int
-    ID_Habilidad: int
-    Nombre: str
+class actividad_con_id(BaseModel):
+    id_actividad: int
+    id_habilidad: int
+    nombre: str
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class RespuestaEntrada(BaseModel):
-    ID_Pregunta: Optional[int] = None
-    ID_Actividad: int
-    ID_Paciente: int
-    Respuesta: str
+class respuesta_entrada(BaseModel):
+    id_pregunta: Optional[int] = None
+    id_actividad: int
+    id_paciente: int
+    respuesta: str
 
-class PacienteTratamientoBase(BaseModel):
-    ID_Paciente: int
-    ID_Tratamiento: int
-    FechaInicio: date
+class paciente_tratamiento_base(BaseModel):
+    id_paciente: int
+    id_tratamiento: int
+    fechainicio: date
 
-class PacienteActividadBase(BaseModel):
-    ID_Paciente: int
-    ID_Actividad: int
-    FechaCompletada: date
-    Completada: bool
+class paciente_actividad_base(BaseModel):
+    id_paciente: int
+    id_actividad: int
+    fechacompletada: date
+    completada: bool
 
-class PacienteHabilidadBase(BaseModel):
-    ID_Paciente: int
-    ID_Habilidad: int
-    FechaCompletada: date
-    Completada: bool
+class paciente_habilidad_base(BaseModel):
+    id_paciente: int
+    id_habilidad: int
+    fechacompletada: date
+    completada: bool    
 
-class ProgresoPacienteBase(BaseModel):
-    ID_Paciente: int
-    ID_Tratamiento: int
-    ID_Habilidad: Optional[int]
-    ID_Actividad: Optional[int]
-    FechaInicio: Optional[date]
+class progreso_paciente_base(BaseModel):
+    id_paciente: int
+    id_tratamiento: int
+    id_habilidad: Optional[int]
+    id_actividad: Optional[int]
+    fechainicio: Optional[date]
 
-class ProgresoResponse(BaseModel):
-    ID_Paciente: int
-    ID_Tratamiento: int
-    ID_Habilidad: int
-    ID_Actividad: int
-    FechaInicio: date
-    Nombre_Habilidad: str
-    Nombre_Actividad: str
+class progreso_response(BaseModel):
+    id_paciente: int
+    id_tratamiento: int
+    id_habilidad: int
+    id_actividad: int
+    fechainicio: date
+    nombre_habilidad: str
+    nombre_actividad: str
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
-class ProgresoPacienteCreate(ProgresoPacienteBase):
+class progreso_paciente_create(progreso_paciente_base):
     pass
 
-class ProgresoPacienteUpdate(ProgresoPacienteBase):
+class progreso_paciente_update(progreso_paciente_base):
     pass
 
-class ProgresoPacienteInDB(ProgresoPacienteBase):
-    class Config:
-        orm_mode = True
+class progreso_paciente_in_db(progreso_paciente_base):
+    model_config = {
+        "from_attributes": True
+    }

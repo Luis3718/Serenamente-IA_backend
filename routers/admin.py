@@ -4,8 +4,10 @@ import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Admin
-from schemas import AdminLogin, AdminCreate
+from models import admin as Admin
+from models import paciente as Paciente
+from schemas import admin_login as AdminLogin
+from schemas import admin_create, paciente_admin_full_update
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer
 from fastapi import Security
@@ -35,18 +37,18 @@ def hash_password(password: str) -> str:
 
 @router.post("/login")
 def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
-    admin = db.query(Admin).filter(Admin.Usuario == data.usuario).first()
+    admin = db.query(Admin).filter(Admin.usuario == data.usuario).first()
     if not admin:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
     hashed = hash_password(data.contrasena)
-    if admin.Contrasena != hashed:
+    if admin.contrasena != hashed:
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
     # Generar token
     payload = {
-        "id": admin.ID_Admin,
-        "usuario": admin.Usuario,
+        "id": admin.id_admin,
+        "usuario": admin.usuario,
         "exp": datetime.utcnow() + timedelta(hours=2)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -54,18 +56,18 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
     return {"access_token": token, "message": "Login exitoso"}
 
 @router.get("/perfil")
-def perfil_admin(admin=Depends(obtener_admin_actual)):
-    return {"message": f"Bienvenido, {admin['usuario']}"}
+def perfil_admin(admin_actual=Depends(obtener_admin_actual)):
+    return {"message": f"Bienvenido, {admin_actual['usuario']}"}
 
 @router.post("/crear")
-def crear_admin(data: AdminCreate, db: Session = Depends(get_db)):
-    existente = db.query(Admin).filter(Admin.Usuario == data.usuario).first()
+def crear_admin(data: admin_create, db: Session = Depends(get_db)):
+    existente = db.query(Admin).filter(Admin.usuario == data.usuario).first()
     if existente:
         raise HTTPException(status_code=400, detail="El usuario ya existe")
 
     nuevo_admin = Admin(
-        Usuario=data.usuario,
-        Contrasena=hash_password(data.contrasena)
+        usuario=data.usuario,
+        contrasena=hash_password(data.contrasena)
     )
     db.add(nuevo_admin)
     db.commit()
@@ -142,3 +144,33 @@ def descargar_base_completa(admin=Depends(obtener_admin_actual)):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error exportando base completa: {str(e)}")
+    
+@router.put("/actualizar_completo/{paciente_id}")
+def actualizar_paciente_completo(
+    paciente_id: int,
+    data: paciente_admin_full_update,
+    db: Session = Depends(get_db),
+    admin=Depends(obtener_admin_actual)
+):
+    db_paciente = db.query(Paciente).filter(Paciente.id_paciente == paciente_id).first()
+    if not db_paciente:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
+
+    if data.nombre:
+        db_paciente.nombre = data.nombre
+    if data.apellidos:
+        db_paciente.apellidos = data.apellidos
+    if data.correo:
+        db_paciente.correo = data.correo
+    if data.correoalternativo:
+        db_paciente.correoalternativo = data.correoalternativo
+    if data.sexo:
+        db_paciente.sexo = data.sexo
+    if data.fechanacimiento:
+        db_paciente.fechanacimiento = data.fechanacimiento
+    if data.nuevacontrasena:
+        db_paciente.contrasena = hash_password(data.nuevacontrasena)
+
+    db.commit()
+    db.refresh(db_paciente)
+    return {"message": "Paciente actualizado completamente"}

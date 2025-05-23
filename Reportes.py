@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 from fpdf import FPDF
-from sqlalchemy import create_engine
 from database import engine
 import os
 from io import BytesIO
@@ -32,8 +31,8 @@ def generar_pdf_reporte(paciente_id):
     # 1. Datos del paciente
     pdf.section_title("Datos del paciente")
     paciente = pd.read_sql(f"""
-        SELECT Nombre, Apellidos, Correo, Celular, Sexo, FechaNacimiento
-        FROM Pacientes WHERE ID_Paciente = {paciente_id}
+        SELECT nombre, apellidos, correo, celular, sexo, fechanacimiento
+        FROM pacientes WHERE id_paciente = {paciente_id}
     """, engine)
     paciente_info = paciente.iloc[0]
     info_text = "\n".join([f"{col}: {paciente_info[col]}" for col in paciente.columns])
@@ -42,48 +41,48 @@ def generar_pdf_reporte(paciente_id):
     # 2. Puntajes de test
     pdf.section_title("Puntajes de test")
     resultados = pd.read_sql(f"""
-        SELECT tf.NombreFormulario, r.Puntuacion
-        FROM Resultados r
-        JOIN Formularios f ON f.ID_Formulario = r.ID_Formulario
-        JOIN TiposFormulario tf ON f.ID_TipoFormulario = tf.ID_TipoFormulario
-        WHERE f.ID_Paciente = {paciente_id} AND f.ID_TipoFormulario != 11
+        SELECT tf.nombreformulario, r.puntuacion
+        FROM resultados r
+        JOIN formularios f ON f.id_formulario = r.id_formulario
+        JOIN tipos_formulario tf ON f.id_tipoformulario = tf.id_tipoformulario
+        WHERE f.id_paciente = {paciente_id} AND f.id_tipoformulario != 11
     """, engine)
 
     for _, row in resultados.iterrows():
-        pdf.section_body(f"{row.NombreFormulario}: {row.Puntuacion}")
+        pdf.section_body(f"{row.nombreformulario}: {row.puntuacion}")
 
     # 3. Gráfica de progreso (basada solo en su tratamiento)
     # 1. Obtener ID del tratamiento asignado al paciente
     tratamiento_id_df = pd.read_sql("""
-        SELECT ID_Tratamiento FROM Paciente_Tratamiento
-        WHERE ID_Paciente = %s
+        SELECT id_tratamiento FROM paciente_tratamiento
+        WHERE id_paciente = %s
     """, engine, params=(paciente_id,))
 
     if tratamiento_id_df.empty:
         pdf.section_title("Progreso de habilidades")
         pdf.section_body("El paciente no tiene un tratamiento asignado.")
     else:
-        tratamiento_id = tratamiento_id_df.iloc[0]["ID_Tratamiento"]
+        tratamiento_id = tratamiento_id_df.iloc[0]["id_tratamiento"]
 
         # 2. Obtener actividades esperadas y completadas por habilidad para ese tratamiento
         query = """
-            SELECT h.Nombre AS Habilidad,
-                tha.ID_Actividad,
-                pa.Completada
-            FROM Tratamiento_Habilidad_Actividad tha
-            JOIN Actividades a ON tha.ID_Actividad = a.ID_Actividad
-            JOIN Habilidades h ON tha.ID_Habilidad = h.ID_Habilidad
-            LEFT JOIN Paciente_Actividad pa ON pa.ID_Actividad = tha.ID_Actividad AND pa.ID_Paciente = %s
-            WHERE tha.ID_Tratamiento = %s AND h.Nombre NOT LIKE '%%Final del Tratamiento%%'
+            SELECT h.nombre AS Habilidad,
+                tha.id_actividad,
+                pa.completada
+            FROM tratamiento_habilidad_actividad tha
+            JOIN actividades a ON tha.id_actividad = a.id_actividad
+            JOIN habilidades h ON tha.id_habilidad = h.id_habilidad
+            LEFT JOIN paciente_actividad pa ON pa.id_actividad = tha.id_actividad AND pa.id_paciente = %s
+            WHERE tha.id_tratamiento = %s AND h.nombre NOT LIKE '%%Final del Tratamiento%%'
         """
         progreso = pd.read_sql(query, engine, params=(paciente_id, tratamiento_id))
 
         # 3. Calcular progreso real por habilidad
-        progreso["Completada"] = progreso["Completada"].fillna(False).infer_objects(copy=False)
+        progreso["completada"] = progreso["completada"].fillna(False).infer_objects(copy=False)
 
         conteo = progreso.groupby("Habilidad").agg(
-            total_actividades=("ID_Actividad", "count"),
-            completadas=("Completada", lambda x: x.astype(bool).sum())
+            total_actividades=("id_actividad", "count"),
+            completadas=("completada", lambda x: x.astype(bool).sum())
         ).reset_index()
 
         conteo["Porcentaje"] = round(conteo["completadas"] / conteo["total_actividades"] * 100, 0)
@@ -142,15 +141,15 @@ def generar_pdf_reporte(paciente_id):
     # 4. Logs del sistema experto
     pdf.section_title("Diagnóstico sistema experto")
     logs = pd.read_sql(f"""
-        SELECT Log_sistema, FechaEvaluacion
-        FROM AsignacionesSistemaExperto
-        WHERE ID_Paciente = {paciente_id}
-        ORDER BY FechaEvaluacion DESC
+        SELECT log_sistema, fechaevaluacion
+        FROM asignacionessistemaexperto
+        WHERE id_paciente = {paciente_id}
+        ORDER BY fechaevaluacion DESC
         LIMIT 1
     """, engine)
 
     if not logs.empty:
-        log_text = f"{logs.iloc[0]['FechaEvaluacion']}:\n{logs.iloc[0]['Log_sistema']}"
+        log_text = f"{logs.iloc[0]['fechaevaluacion']}:\n{logs.iloc[0]['log_sistema']}"
         pdf.section_body(log_text)
     else:
         pdf.section_body("Sin registros de asignación del sistema experto.")

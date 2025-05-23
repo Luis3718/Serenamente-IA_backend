@@ -1,15 +1,19 @@
-import hashlib  # Importar hashlib para el hash de contraseñas
-import schemas
-import models
+import hashlib
 from datetime import date
 from typing import List
-from correo import enviar_correo_verificacion
-from routers.admin import obtener_admin_actual
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Paciente
-from schemas import PacienteCreate, Paciente, PerfilUpdate, PacienteOut, PacienteAdminFullUpdate
+from models import paciente as Paciente
+from schemas import (
+    paciente_create,
+    paciente,
+    perfil_update,
+    paciente_out,
+    paciente_admin_full_update
+)
+from correo import enviar_correo_verificacion
+from routers.admin import obtener_admin_actual
 
 router = APIRouter(
     prefix="/pacientes",
@@ -20,130 +24,127 @@ def hash_password(password: str) -> str:
     """Función para hashear la contraseña usando SHA-256."""
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
-@router.post("/", response_model=schemas.Paciente)
-def crear_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_db)):
-    # Verificar si el correo ya existe
-    db_paciente = db.query(models.Paciente).filter(models.Paciente.Correo == paciente.Correo).first()
+@router.post("/", response_model=paciente)
+def crear_paciente(data: paciente_create, db: Session = Depends(get_db)):
+    db_paciente = db.query(Paciente).filter(Paciente.correo == data.correo).first()
     if db_paciente:
         raise HTTPException(status_code=400, detail="El correo ya está registrado.")
-    # Calcular la edad
+
     hoy = date.today()
-    fecha_nacimiento = paciente.FechaNacimiento
+    fecha_nacimiento = data.fechanacimiento
     edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
 
-    # Determinar si el usuario es apto
-    es_apto = edad >= 18 and paciente.EnTratamiento == "ninguno"
+    es_apto = edad >= 18 and data.entratamiento.lower() == "ninguno"
 
-    # Registrar al usuario
-    hashed_password = hash_password(paciente.Contraseña)
-    nuevo_paciente = models.Paciente(
-        Nombre=paciente.Nombre,
-        Apellidos=paciente.Apellidos,
-        Correo=paciente.Correo,
-        CorreoAlternativo=paciente.CorreoAlternativo,
-        Contraseña=hashed_password,
-        Celular=paciente.Celular,
-        Sexo=paciente.Sexo,
-        FechaNacimiento=paciente.FechaNacimiento,
-        ID_NivelEstudios=paciente.ID_NivelEstudios,
-        ID_Ocupacion=paciente.ID_Ocupacion,
-        ID_Residencia=paciente.ID_Residencia,
-        ID_EstadoCivil=paciente.ID_EstadoCivil,
-        EnTratamiento=paciente.EnTratamiento,
-        ID_TipoENT=paciente.ID_TipoENT,
-        TomaMedicamentos=paciente.TomaMedicamentos,
-        NombreMedicacion=paciente.NombreMedicacion,
-        AvisoPrivacidad=paciente.AvisoPrivacidad,
-        CartaConsentimiento=paciente.CartaConsentimiento,
-        EsApto=es_apto,  
+    hashed_password = hash_password(data.contrasena)
+    nuevo_paciente = Paciente(
+        nombre=data.nombre,
+        apellidos=data.apellidos,
+        correo=data.correo,
+        correoalternativo=data.correoalternativo,
+        contrasena=hashed_password,
+        celular=data.celular,
+        sexo=data.sexo,
+        fechanacimiento=data.fechanacimiento,
+        id_nivelestudios=data.id_nivelestudios,
+        id_ocupacion=data.id_ocupacion,
+        id_residencia=data.id_residencia,
+        id_estadocivil=data.id_estadocivil,
+        entratamiento=data.entratamiento,
+        id_tipoent=data.id_tipoent,
+        tomamedicamentos=data.tomamedicamentos,
+        nombremedicacion=data.nombremedicacion,
+        avisoprivacidad=data.avisoprivacidad,
+        cartaconsentimiento=data.cartaconsentimiento,
+        esapto=es_apto
     )
     db.add(nuevo_paciente)
     db.commit()
     db.refresh(nuevo_paciente)
 
-    # Enviar correo solo si es apto
     if es_apto:
-        enviar_correo_verificacion(paciente.Correo)
+        enviar_correo_verificacion(data.correo)
 
     return nuevo_paciente
 
-@router.get("/", response_model=List[PacienteOut])
+@router.get("/", response_model=List[paciente_out])
 def obtener_todos_los_pacientes(db: Session = Depends(get_db), admin=Depends(obtener_admin_actual)):
-    return db.query(models.Paciente).all()
+    return db.query(Paciente).all()
 
-@router.get("/{paciente_id}", response_model=Paciente)
+@router.get("/{paciente_id}", response_model=paciente)
 def obtener_paciente(paciente_id: int, db: Session = Depends(get_db)):
-    paciente = db.query(Paciente).filter(Paciente.ID_Paciente == paciente_id).first()
-    if not paciente:
+    db_paciente = db.query(Paciente).filter(Paciente.id_paciente == paciente_id).first()
+    if not db_paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
-    return paciente
+    return db_paciente
 
-@router.get("termina_tratamiento/{paciente_id}", response_model=schemas.Paciente)
+@router.get("/termina_tratamiento/{paciente_id}")
 def salir_tratamiento(paciente_id: int, db: Session = Depends(get_db)):
-    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
-    if not paciente:
+    db_paciente = db.query(Paciente).filter(Paciente.id_paciente == paciente_id).first()
+    if not db_paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
-    paciente.EsApto = False
+    db_paciente.esapto = False
     db.commit()
+
     return {"message": "El paciente ha salido del tratamiento exitosamente"}
 
 @router.get("/perfil/{paciente_id}")
 def obtener_perfil_paciente(paciente_id: int, db: Session = Depends(get_db)):
-    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
-    if not paciente:
+    db_paciente = db.query(Paciente).filter(Paciente.id_paciente == paciente_id).first()
+    if not db_paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
     return {
-        "Nombre": paciente.Nombre,
-        "Apellidos": paciente.Apellidos,
-        "Correo": paciente.Correo,
-        "Celular": paciente.Celular
+        "nombre": db_paciente.nombre,
+        "apellidos": db_paciente.apellidos,
+        "correo": db_paciente.correo,
+        "celular": db_paciente.celular
     }
 
 @router.put("/perfil/{paciente_id}")
-def actualizar_perfil_paciente(paciente_id: int, perfil_data: PerfilUpdate, db: Session = Depends(get_db)):
-    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
-    if not paciente:
+def actualizar_perfil_paciente(paciente_id: int, perfil_data: perfil_update, db: Session = Depends(get_db)):
+    db_paciente = db.query(Paciente).filter(Paciente.id_paciente == paciente_id).first()
+    if not db_paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
-    if perfil_data.Nombre:
-        paciente.Nombre = perfil_data.Nombre
-    if perfil_data.Apellidos:
-        paciente.Apellidos = perfil_data.Apellidos
-    if perfil_data.Celular:
-        paciente.Celular = perfil_data.Celular
+    if perfil_data.nombre:
+        db_paciente.nombre = perfil_data.nombre
+    if perfil_data.apellidos:
+        db_paciente.apellidos = perfil_data.apellidos
+    if perfil_data.celular:
+        db_paciente.celular = perfil_data.celular
 
     db.commit()
-    db.refresh(paciente)
+    db.refresh(db_paciente)
     return {"message": "Perfil actualizado exitosamente"}
 
 @router.put("/admin/actualizar_completo/{paciente_id}")
 def actualizar_paciente_completo(
     paciente_id: int,
-    data: PacienteAdminFullUpdate,
+    data: paciente_admin_full_update,
     db: Session = Depends(get_db),
     admin=Depends(obtener_admin_actual)
 ):
-    paciente = db.query(models.Paciente).filter(models.Paciente.ID_Paciente == paciente_id).first()
-    if not paciente:
+    db_paciente = db.query(Paciente).filter(Paciente.id_paciente == paciente_id).first()
+    if not db_paciente:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
-    if data.Nombre:
-        paciente.Nombre = data.Nombre
-    if data.Apellidos:
-        paciente.Apellidos = data.Apellidos
-    if data.Correo:
-        paciente.Correo = data.Correo
-    if data.SegundoCorreo:
-        paciente.CorreoAlternativo = data.SegundoCorreo
-    if data.Sexo:
-        paciente.Sexo = data.Sexo
-    if data.FechaNacimiento:
-        paciente.FechaNacimiento = data.FechaNacimiento
-    if data.NuevaContrasena:
-        paciente.Contraseña = hash_password(data.NuevaContrasena)
+    if data.nombre:
+        db_paciente.nombre = data.nombre
+    if data.apellidos:
+        db_paciente.apellidos = data.apellidos
+    if data.correo:
+        db_paciente.correo = data.correo
+    if data.correoalternativo:
+        db_paciente.correoalternativo = data.correoalternativo
+    if data.sexo:
+        db_paciente.sexo = data.sexo
+    if data.fechanacimiento:
+        db_paciente.fechanacimiento = data.fechanacimiento
+    if data.nuevacontrasena:
+        db_paciente.contrasena = hash_password(data.nuevacontrasena)
 
     db.commit()
-    db.refresh(paciente)
+    db.refresh(db_paciente)
     return {"message": "Paciente actualizado completamente"}
