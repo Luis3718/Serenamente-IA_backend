@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica de Consciencia de la Respiración</title>
+    <link rel="stylesheet" href="static/styles/actividad.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-container">
+                <a href="index.html">
+                    <img src="static/imagenes/logo.jpeg" alt="Logo SerenaMente IA" class="logo">
+                </a>
+            </div>
+            <button class="menu-toggle" aria-label="Toggle Menu">&#9776;</button>
+            <nav class="submenu">
+                <ul>
+                    <li><a href="actividades.html">Mis actividades</a></li>
+                    <li><a href="progreso.html">Mi progreso</a></li>
+                    <div class="user-menu">
+                        <div id="user-avatar" class="avatar">US</div>
+                        <div id="user-dropdown" class="dropdown-menu">
+                            <a href="perfil.html">Ver perfil</a>
+                            <a href="#" id="logout">Cerrar sesión</a>
+                        </div>
+                    </div>                        
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <h1>{{titulo}}</h1> 
+            <p>{{descripcion}}</p>
+            <p><strong>Tipo:</strong> {{tipo}}</p>
+            <div class="recursos">
+                {{recursos_embed}}
+            </div>
+
+    </div>
+
+    <!-- Contenedor del chatbot -->
+    <div id="chatbot-wrapper" class="chatbot-wrapper hidden">
+        <div class="chatbot-container">
+        <div class="chatbot-header">Chatbot</div>
+        <div id="chatbot-messages" class="chatbot-messages"></div>
+        <div id="chatbot-input" class="chatbot-input"></div>
+        </div>
+    </div>
+  
+    <!-- Contenedor total del final -->
+    <div id="mensaje-final" style="display: none; margin-top: 40px;">
+
+        <!-- Mensaje final + imagen (cuadro amarillo) -->
+        <div class="mensaje-final" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 40px;">
+        <!-- Texto a la izquierda -->
+        <div style="flex: 2;">
+            <p><strong>¡Muy bien hecho!</strong> En esta práctica has logrado concentrarte en tu respiración y en tu cuerpo, ayudándote a estar presente en el momento. Recuerda que mindfulness es un proceso de conocerte mejor a ti mismo, que te ayudará a entender lo que te sucede en diferentes aspectos de tu vida.</p>
+            <p>No olvides que puedes volver a esta práctica siempre que lo necesites.</p>
+            <div class="button-container" style="margin-top: 15px;">
+                <button id="btn-quiero-saber-mas" class="boton-enviar">Quiero saber más</button>
+                <button id="btn-menu-principal" class="boton-enviar" style="display: none;">Regresar al menú principal</button>
+                <button id="btn-siguiente-actividad" class="boton-enviar" style="display: none;">Siguiente actividad</button>
+            </div>        
+        </div>
+    
+        <!-- Imagen a la derecha -->
+        <div style="flex: 1; text-align: center;">
+            <img src="static/imagenes/progreso.png" alt="Progreso coloreado 1/3" style="max-width: 100%; height: auto;">
+        </div>
+        </div>
+    </div>
+  
+  
+    </main>
+    <div class="social-bar">
+        <a href="https://www.facebook.com/SerenaMenteUNAM?_rdc=1&_rdr#" target="_blank" class="social-icon">
+            <img src="static/imagenes/Logo_facebook.png" alt="Facebook">
+        </a>
+        <a href="https://www.instagram.com/serenamente_app/?igshid=YTQwZjQ0NmI0OA%3D%3D" target="_blank" class="social-icon">
+            <img src="static/imagenes/Logo_instagram.png" alt="Instagram">
+        </a>
+        <a href="https://www.youtube.com/@SerenaMente-xk7tm" target="_blank" class="social-icon">
+            <img src="static/imagenes/Logo_youtube.png" alt="YouTube">
+        </a>
+    
+    </div>
+    
+    <!--Banner con logos-->
+    <div class="banner-section">
+        <div class="banner-logo">
+            <img src="static/imagenes/LOGO.png" alt="Logo SerenaMente">
+        </div>
+        <div class="banner-text">
+            <p>Cuenta con el respaldo y colaboración de investigadores e investigadoras de las siguientes instituciones.</p>
+        </div>
+        <div class="banner-logos">
+            <a href="https://www.unam.mx">
+                <img src="static/imagenes/Logo1.png" alt="Logo UNAM">
+            </a>
+            <a href="https://suayed.iztacala.unam.mx/">
+                <img src="static/imagenes/Logo2.png" alt="Logo SUAYED">
+            </a>
+            <a href="https://labpsiit.iztacala.unam.mx/">
+                <img src="static/imagenes/Logo3.png" alt="Logo LABPSITT">
+            </a>
+            <a href="https://www.ipn.mx/">
+                <img src="static/imagenes/Logo4.png" alt="Logo IPN">
+            </a>
+            <a href="https://www.escom.ipn.mx/">
+                <img src="static/imagenes/Logo5.png" alt="Logo ESCOM">
+            </a>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-text">
+                <h3>¿Tienes dudas?</h3>
+                <p>Si tienes más preguntas o dudas sobre cualquier tema, puedes contactarnos y seguro te responderemos.</p>
+            </div>
+            <div class="footer-buttons">
+                <a href="mailto:serenamente@iztacala.unam.mx" class="footer-btn">Correo electrónico</a>
+                <a href="avisoprivacidad.html" class="footer-btn">Aviso de Privacidad</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+      // Funcion para el menu de hamburguesa
+      const menuToggle = document.querySelector('.menu-toggle');
+      const submenu = document.querySelector('.submenu');
+
+      menuToggle.addEventListener('click', () => {
+          submenu.classList.toggle('active');
+      });
+
+      // Funcion animacion de bolita de respiracion
+      function breathingAnimation() {
+          const circle = document.querySelector(".circle");
+          const text = document.getElementById("breathing-text");
+          let cycle = 0;
+          setInterval(() => {
+              if (cycle % 2 === 0) {
+                  text.textContent = "Inhala...";
+                  circle.style.transform = "scale(1.5)";
+              } else {
+                  text.textContent = "Exhala...";
+                  circle.style.transform = "scale(1)";
+              }
+              cycle++;
+          }, 5000);
+      }
+  
+      document.addEventListener("DOMContentLoaded", breathingAnimation);
+
+      //animacion de texto
+      document.addEventListener("DOMContentLoaded", () => {
+        const textElement = document.querySelector(".typing-text");
+        const botonMostrarChatbot = document.getElementById("mostrarChatbot");
+
+        if (textElement) {
+            const text = textElement.textContent.trim();
+            textElement.textContent = "";
+
+            let i = 0;
+            const speed = 30;
+
+            function typeWriter() {
+                if (i < text.length) {
+                    textElement.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    botonMostrarChatbot.disabled = false; 
+                }
+            }
+
+            // Llama a la funcion si existe serenito dialogo
+            const serenitoDialogo = document.querySelector(".serenito-dialogo");
+            if (serenitoDialogo) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            typeWriter();
+                            observer.unobserve(entry.target); 
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                observer.observe(serenitoDialogo);
+            } else {
+                // Si no hay serenito-dialogo, habilita inmediatamente el boton
+                botonMostrarChatbot.disabled = false;
+            }
+        } else {
+            // No hay texto, habilita el botón de una vez
+            botonMostrarChatbot.disabled = false;
+        }
+      });
+
+      // Funcion que verifica el token 
+      async function verificarAutenticacion() {
+          const token = localStorage.getItem("token");
+          if (!token) {
+              window.location.href = "login.html";
+              return;
+          }
+
+          try {
+              const response = await fetch("http://localhost:8002/auth/verify-token", {
+                  method: "GET",
+                  headers: { "Authorization": `Bearer ${token}` }
+              });
+
+              if (!response.ok) {
+                  console.error("Error en la autenticación:", await response.json());
+                  localStorage.removeItem("token");
+                  window.location.href = "login.html";
+                  return;
+              }
+
+              const userData = await response.json();
+              const initials = userData.usuario.nombre
+                  .split(" ")
+                  .map(word => word[0])
+                  .join("")
+                  .toUpperCase();
+              document.getElementById("user-avatar").textContent = initials;
+          } catch (error) {
+              console.error("Error en la autenticación:", error);
+              window.location.href = "login.html";
+          }
+      }
+      
+      verificarAutenticacion();
+      
+      // Funcion que dibuja dinamicamente las activiades del mensaje-final
+      document.addEventListener("DOMContentLoaded", async function () {
+          const token = localStorage.getItem("token");
+          if (!token) {
+              window.location.href = "login.html";
+              return;
+          }
+
+          const pacienteId = getTokenId();
+          const habilidadId = 5; //Cambiar el id habilidad de acuerdo a la actividad
+          const activitiesContainer = document.querySelector("#activities-menu .activities");
+
+          try {
+              // Obtener tratamiento actual
+              const tratamientoResp = await fetch(`http://localhost:8002/tratamiento/progreso/${pacienteId}`);
+              const tratamientoData = await tratamientoResp.json();
+              const tratamientoId = tratamientoData.id_tratamiento;
+
+              // Obtener actividades de la habilidad actual
+              const actividadesResp = await fetch(`http://localhost:8002/tratamiento/ruta_actividad/${tratamientoId}/habilidad/${habilidadId}`);
+              const actividades = await actividadesResp.json();
+
+              // Obtener el progreso del paciente
+              const progresoResp = await fetch(`http://localhost:8002/tratamiento/progreso/actividad_actual/${pacienteId}`);
+              const progresoData = await progresoResp.json();
+              const actividadActualId = progresoData.id_actividad_actual;
+
+              // Limpiar el contenedor
+              activitiesContainer.innerHTML = "";
+
+              actividades.forEach((actividad, index) => {
+                  const activityDiv = document.createElement("div");
+                  activityDiv.classList.add("activity");
+
+                  const cardDiv = document.createElement("div");
+                  cardDiv.classList.add("activity-card");
+                  cardDiv.id = `activity${index + 1}`;
+
+                  if (actividad.id_actividad < actividadActualId) {
+                        cardDiv.classList.add("completada");
+                    } else if (actividad.id_actividad === actividadActualId) {
+                        // Actividad actual desbloqueada
+                    } else {
+                        cardDiv.classList.add("disabled");
+                    }
+  
+                    cardDiv.innerHTML = `
+                        <p>${index + 1}. ${actividad.nombre}</p>
+                        <a href="actividad${actividad.id_actividad}.html">
+                            <button ${actividad.id_actividad > actividadActualId ? "disabled" : ""}>
+                                <img src="static/imagenes/boton${habilidadId}${index + 1}.png" alt="actividad${habilidadId}${index + 1}">
+                            </button>
+                        </a>
+                    `;
+
+                  activityDiv.appendChild(cardDiv);
+                  activitiesContainer.appendChild(activityDiv);
+              });
+
+          } catch (error) {
+              console.error("Error cargando actividades dinámicamente:", error);
+          }
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+          const avatar = document.getElementById("user-avatar");
+          const userMenu = document.querySelector(".user-menu");
+
+          avatar.addEventListener("click", function () {
+              userMenu.classList.toggle("active");
+          });
+
+          document.getElementById("logout").addEventListener("click", function () {
+              localStorage.removeItem("token");
+              window.location.href = "login.html";
+          });
+      });
+
+      function submitResponses() {
+          alert('Tus respuestas han sido enviadas. ¡Gracias por compartir tu experiencia!');
+          document.getElementById('chatbot-container').classList.add('hidden');
+          document.getElementById('final-message').classList.remove('hidden');
+      }
+
+      function getTokenId() {
+          const token = localStorage.getItem("token");
+          if (token) {
+              try {
+                  const base64Url = token.split('.')[1];
+                  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                  }).join(''));
+
+                  const { id } = JSON.parse(jsonPayload);
+                  return id;
+              } catch (error) {
+                  console.error("Error decoding token:", error);
+                  return null;
+              }
+          }
+          return null;
+      }
+
+      // Funcion para contestar las preguntas del chatbot
+      document.addEventListener("DOMContentLoaded", async () => {
+          const video = document.querySelector("video");
+          const chatbot = document.getElementById("chatbot-wrapper");
+          const messages = document.getElementById("chatbot-messages");
+          const inputArea = document.getElementById("chatbot-input");
+
+          const pacienteId = getTokenId();
+          let actividadActual = 18; // Se cambia el id de actividad
+          let habilidadActual = 5; // Se cambia el id de habilidad
+          let idTratamiento = null;
+          let esUltimaActividad = false;
+
+          try {
+              // Obtener el progreso del paciente (para saber el tratamiento actual)
+              const progresoResp = await fetch(`http://localhost:8002/tratamiento/progreso/${pacienteId}`);
+              const progreso = await progresoResp.json();
+              idTratamiento = progreso.id_tratamiento;
+
+              // Obtener las actividades de la habilidad en el tratamiento actual
+              const actividadesResp = await fetch(`http://localhost:8002/tratamiento/ruta_actividad/${idTratamiento}/habilidad/${habilidadActual}`);
+              const actividades = await actividadesResp.json();
+              const idsActividades = actividades.map(act => act.id_actividad);
+
+              const index = idsActividades.indexOf(actividadActual);
+              if (index === idsActividades.length - 1) {
+                  esUltimaActividad = true;
+              }
+
+          } catch (error) {
+              console.error("Error al determinar si es la última actividad:", error);
+          }
+
+          let preguntas = [
+          {
+              texto: "¿Te fue posible realizar toda la práctica?",
+              tipo: "única",
+              opciones: ["Sí, todo bien", "No, tuve dificultades"]
+          },
+          {
+              texto: "¿Qué tan presente te sentiste durante la práctica?",
+              tipo: "única",
+              opciones: ["Nada presente", "Un poco presente", "Moderadamente presente", "Muy presente", "Completamente presente"]
+          },
+          {
+              texto: "¿Qué notaste en tu cuerpo durante tu práctica? (Marca todas las que apliquen)",
+              tipo: "multi",
+              opciones: ["Tensión muscular", "Sensación de calor", "Sensación de frío", "Incomodidad", "Dolor", "Relajación", "Ligereza", "Pesadez", "Hormigueo", "Otro"]
+          },
+          {
+              texto: "¿Qué pensamientos o emociones surgieron durante tu práctica? (Marca todas las que apliquen)",
+              tipo: "multi",
+              opciones: ["Preocupación por el futuro", "Recuerdos del pasado", "Autocrítica", "Juicio hacia otros", "Frustración", "Tristeza", "Alegría", "Calma", "Paz", "Ira", "Miedo", "Otro (especificar):"]
+          },
+          {
+              texto: "¿Identificaste alguna conexión con tu forma de vivir el estrés?",
+              tipo: "única",
+              opciones: ["Sí, claramente", "Posiblemente", "No, no lo creo", "No estoy seguro/a"]
+          },
+          {
+              texto: "¿Notaste algunas de estas experiencias durante la práctica? (Marca todas las que apliquen)",
+              tipo: "multi",
+              opciones: ["Pensamientos automáticos", "Sueño", "Emociones desagradables", "Inquietud", "Recuerdos vividos", "Aburrimiento", "Preocupaciones", "Recuerdos", "Emociones agradables", "Conmovido/a", "Claridad mental", "Consciencia expandida", "Sentirte con más energía", "Tranquilidad", "Cosquilleo", "Relajación muscular", "Sensaciones internas"]
+          }
+      ];
+
+      // Limitar a 4 preguntas si no es la última
+      if (!esUltimaActividad) {
+          preguntas = preguntas.slice(0, 4);
+      }
+
+
+          let respuestas = {};
+          let indice = 0;
+
+          function mostrarPregunta() {
+              inputArea.innerHTML = "";
+              const pregunta = preguntas[indice];
+              const contenedorBurbuja = document.createElement("div");
+              contenedorBurbuja.className = "mensaje-bot-container";
+
+              const burbuja = document.createElement("div");
+              burbuja.className = "mensaje-bot typing-question";
+
+              contenedorBurbuja.appendChild(burbuja);
+              messages.appendChild(contenedorBurbuja);
+
+              escribirPalabraPorPalabra(burbuja, pregunta.texto, () => {
+                  burbuja.classList.remove("typing-question");
+
+                  const contenedorOpciones = document.createElement("div");
+                  contenedorOpciones.className = "multi-options";
+
+                  let inputOtro;
+
+                  pregunta.opciones.forEach(op => {
+                      const btn = document.createElement("button");
+                      btn.type = "button";
+                      btn.textContent = op;
+
+                      btn.onclick = () => {
+                          if (pregunta.tipo === "única") {
+                              contenedorOpciones.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+                              btn.classList.add("selected");
+                          } else {
+                              btn.classList.toggle("selected");
+                          }
+
+                          if (op.includes("Otro")) {
+                              if (inputOtro) inputOtro.style.display = "block";
+                          } else if (pregunta.tipo === "única" && inputOtro) {
+                              inputOtro.style.display = "none";
+                              inputOtro.value = "";
+                          }
+                      };
+
+                      contenedorOpciones.appendChild(btn);
+                  });
+
+                  if (pregunta.opciones.some(op => op.includes("Otro"))) {
+                      inputOtro = document.createElement("input");
+                      inputOtro.placeholder = "Especifica";
+                      inputOtro.style.display = "none";
+                      contenedorOpciones.appendChild(inputOtro);
+                  }
+
+                  inputArea.appendChild(contenedorOpciones);
+
+                  const btn = crearBoton(() => {
+                      const seleccionados = Array.from(contenedorOpciones.querySelectorAll(".selected")).map(b => b.textContent);
+                      const otroTexto = inputOtro?.value?.trim();
+                      if (otroTexto) seleccionados.push(otroTexto);
+
+                      if (seleccionados.length === 0) return alert("Por favor, selecciona al menos una opción");
+
+                      respuestas[`pregunta_${indice}`] = seleccionados;
+                      mostrarRespuestaUsuario(seleccionados.join(", "));
+                      siguiente();
+                  });
+                  inputArea.appendChild(btn);
+                  messages.scrollTop = messages.scrollHeight;
+              });
+          }
+
+          function mostrarRespuestaUsuario(texto) {
+              const burbuja = document.createElement("div");
+              burbuja.className = "mensaje-usuario";
+              burbuja.textContent = texto;
+              messages.appendChild(burbuja);
+              messages.scrollTop = messages.scrollHeight;
+          }
+
+          function crearBoton(fn) {
+              const btn = document.createElement("button");
+              btn.textContent = "Siguiente";
+              btn.className = "boton-enviar";
+              btn.onclick = fn;
+              return btn;
+          }
+
+          function escribirPalabraPorPalabra(el, texto, callback) {
+              const palabras = texto.split(" ");
+              let i = 0;
+
+              function escribir() {
+                  if (i < palabras.length) {
+                      el.textContent += palabras[i] + " ";
+                      i++;
+                      setTimeout(escribir, 50);
+                  } else {
+                      callback();
+                  }
+              }
+              escribir();
+          }
+
+          async function siguiente() {
+              indice++;
+              if (indice < preguntas.length) {
+                  mostrarPregunta();
+              } else {
+                  inputArea.innerHTML = "";
+                  const gracias = document.createElement("div");
+                  gracias.className = "mensaje-bot";
+                  gracias.textContent = "Gracias por tus respuestas";
+                  messages.appendChild(gracias);
+                  messages.scrollTop = messages.scrollHeight;
+
+                  setTimeout(async () => {
+                      const pacienteId = getTokenId();
+                      const actividadActual = 18; // Se cambia el id de actividad
+                      const habilidadActual = 5; // Se cambia el id de habilidad
+
+                      try {
+                          // Consultar si la actividad ya está completada
+                          const compResp = await fetch(`http://localhost:8002/tratamiento/actividad/completada/${pacienteId}/${actividadActual}`);
+                          const compData = await compResp.json();
+                          const yaCompletada = compData.completada;
+
+                          // Si no esta completada
+                          if (!yaCompletada) {
+                              // Envia las respuestas
+                              const respuestasFormateadas = Object.entries(respuestas).map(([k, v], i) => ({
+                                id_pregunta: i + 1,
+                                id_actividad: actividadActual,
+                                id_paciente: pacienteId,
+                                respuesta: Array.isArray(v) ? v.join(", ") : v
+                              }));
+
+                              // llama el endpoint de enviar respuestas
+                              await fetch("http://localhost:8002/tratamiento/respuestas/guardar", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify(respuestasFormateadas)
+                              });
+
+                              // llama al enpoint de marcar actividad como completada
+                              await fetch(`http://localhost:8002/tratamiento/progreso/completar_actividad/${pacienteId}`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" }
+                              });
+                          }
+                          
+                          // Funcion qeu busca y genera el link a la siguiente actividad
+                          const progresoResp = await fetch(`http://localhost:8002/tratamiento/progreso/${pacienteId}`);
+                          const progreso = await progresoResp.json();
+                          
+                          const nuevaHabilidad = progreso.id_habilidad;
+                          const nuevaActividad = progreso.id_actividad;
+
+                          const botonSiguiente = document.getElementById("btn-siguiente-actividad");
+                          const botonMenu = document.getElementById("btn-menu-principal");
+
+                          if (nuevaHabilidad === habilidadActual) {
+                              botonSiguiente.style.display = "inline-block";
+                              botonMenu.style.display = "inline-block";
+
+                              botonSiguiente.onclick = function() {
+                                  window.location.href = "actividad${nuevaActividad}.html";
+                              };
+                              botonMenu.onclick = function() {
+                                  window.location.href = "actividades.html";
+                              };
+                          } else {
+                              botonSiguiente.style.display = "none";
+                              botonMenu.style.display = "inline-block";
+
+                              botonMenu.onclick = function() {
+                                  window.location.href = "actividades.html";
+                              };
+                          }
+
+                          const chatbotWrapper = document.getElementById("chatbot-wrapper");
+                          const mensajeFinal = document.getElementById("mensaje-final");
+
+                          chatbotWrapper.classList.add("hidden");
+                          mensajeFinal.style.display = "block";
+                          mensajeFinal.style.animation = "fadeIn 1s ease forwards";
+
+                      } catch (error) {
+                          console.error("Error en el flujo de finalización:", error);
+                          alert("Ocurrió un error al finalizar la actividad.");
+                      }
+                  }, 2000);
+              }
+          }
+          
+          // Funcion que muestra el chatbot
+          document.getElementById("mostrarChatbot").addEventListener("click", () => {
+              const chatbotWrapper = document.getElementById("chatbot-wrapper");
+              const botonMostrar = document.getElementById("mostrarChatbot");
+
+              chatbotWrapper.classList.remove("hidden");
+              botonMostrar.classList.add("hidden");
+              mostrarPregunta();
+          });
+      });
+
+      document.getElementById("btn-quiero-saber-mas").addEventListener("click", function() {
+            window.location.href = "quierosabermas.html";
+        });
+    </script>
+</body>
+</html>
+

@@ -177,6 +177,13 @@ class actividad_base(BaseModel):
     id_habilidad: int
     nombre: str
 
+class actividad_create(BaseModel):
+    id_habilidad: int
+    nombre: str
+    descripcion: str
+    tipo: str
+    recursos: List[str] 
+
 class actividad_con_id(BaseModel):
     id_actividad: int
     id_habilidad: int
@@ -185,6 +192,10 @@ class actividad_con_id(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class actividad_admin_update(BaseModel):
+    id_habilidad: int
+    nombre: str
 
 class respuesta_entrada(BaseModel):
     id_pregunta: Optional[int] = None

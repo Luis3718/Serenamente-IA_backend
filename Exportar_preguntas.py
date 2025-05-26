@@ -305,7 +305,88 @@ def exportar_base_completa():
     except Exception as e:
         print("❌ Error durante la exportación:", str(e))
 
+def exportar_post_tests_individual(paciente_id: int):
+    try:
+        print(f"🟢 Exportando post-tests del paciente ID {paciente_id}...")
+
+        output_dir = os.path.dirname(os.path.abspath(__file__))
+
+        post_ids = [1, 2, 5, 4, 9, 7, 8, 6, 10, 12, 13, 14, 15]
+
+        paciente_info = pd.read_sql(f"""
+            SELECT id_paciente, nombre, apellidos, correo
+            FROM pacientes
+            WHERE id_paciente = {paciente_id}
+        """, engine)
+
+        if paciente_info.empty:
+            print("❌ Paciente no encontrado.")
+            return
+
+        nombre_archivo = f"PostTest_{paciente_info.iloc[0]['nombre']}_{paciente_info.iloc[0]['apellidos']}.xlsx"
+        output_path = os.path.join(output_dir, nombre_archivo)
+
+        formularios_df = pd.read_sql("SELECT * FROM formularios", engine)
+        respuestas_df = pd.read_sql("SELECT * FROM respuestas", engine)
+        preguntas_df = pd.read_sql("SELECT * FROM preguntas", engine)
+        resultados_df = pd.read_sql("SELECT * FROM resultados", engine)
+        tipos_formulario_df = pd.read_sql("SELECT * FROM tipos_formulario", engine)
+
+        formulario_nombre = {
+            row.id_tipoformulario: row.nombreformulario.split("(")[-1].replace(")", "").replace(" ", "").upper()
+            for _, row in tipos_formulario_df.iterrows()
+        }
+
+        fila = {
+            "nombre": paciente_info.iloc[0]['nombre'],
+            "apellidos": paciente_info.iloc[0]['apellidos'],
+            "correo": paciente_info.iloc[0]['correo']
+        }
+
+        for tipo_post in post_ids:
+            # Filtrar el formulario más reciente por tipo
+            formularios_paciente = formularios_df[
+                (formularios_df.id_paciente == paciente_id) &
+                (formularios_df.id_tipoformulario == tipo_post)
+            ].sort_values("fecha_respuesta", ascending=True)
+
+            if formularios_paciente.empty:
+                continue
+
+            id_formulario = formularios_paciente.iloc[0]["id_formulario"]
+            nombre_formulario = formulario_nombre.get(tipo_post, f"FORM{tipo_post}")
+
+            preguntas_tipo = preguntas_df[preguntas_df.id_tipoformulario == tipo_post].reset_index(drop=True)
+
+            for i, pregunta in preguntas_tipo.iterrows():
+                num_pregunta = i + 1
+                col_name = f"post_p{num_pregunta}_{nombre_formulario}"
+                
+                # Filtrar respuesta por id_formulario, paciente y pregunta
+                respuesta = respuestas_df[
+                    (respuestas_df.id_paciente == paciente_id) &
+                    (respuestas_df.id_pregunta == pregunta.id_pregunta)
+                ]
+
+                # Se asume que las respuestas más recientes son las que corresponden al formulario más reciente
+                # porque la tabla de respuestas no tiene id_formulario
+                fila[col_name] = respuesta["respuesta"].values[0] if not respuesta.empty else ""
+
+            # Puntaje por id_formulario
+            puntaje = resultados_df[resultados_df.id_formulario == id_formulario]["puntuacion"]
+            col_puntaje = f"post_puntaje_{nombre_formulario}"
+            fila[col_puntaje] = puntaje.values[0] if not puntaje.empty else ""
+
+        df_export = pd.DataFrame([fila])
+        df_export.to_excel(output_path, index=False)
+        print(f"✅ Post-test individual exportado: {output_path}")
+        return nombre_archivo
+
+    except Exception as e:
+        print(f"❌ Error exportando post-test: {e}")
+
 if __name__ == "__main__":
     #exportar_pretest_completo()
     #exportar_pretest_individual(paciente_id=1)
-    exportar_base_completa()
+    # exportar_base_completa()
+    exportar_post_tests_individual(1)
