@@ -63,7 +63,7 @@ def crear_paciente(data: paciente_create, db: Session = Depends(get_db)):
     db.refresh(nuevo_paciente)
 
     if es_apto:
-        enviar_correo_verificacion(data.correo)
+        enviar_correo_verificacion(data.correo, data.nombre, data.apellidos)
 
     return nuevo_paciente
 

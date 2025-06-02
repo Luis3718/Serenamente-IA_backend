@@ -154,6 +154,32 @@ def generar_pdf_reporte(paciente_id):
     else:
         pdf.section_body("Sin registros de asignación del sistema experto.")
 
+    # 5. Puntajes más recientes de post-test (solo si tiene post-test válidos)
+    pdf.section_title("Puntajes del post-test")
+
+    post_ids = [1, 2, 5, 4, 9, 7, 8, 6, 10, 12, 13, 14, 15]
+
+    resultados_recientes = pd.read_sql(f"""
+        WITH ultimos_formularios AS (
+            SELECT f.id_formulario, f.id_tipoformulario, tf.nombreformulario,
+                   ROW_NUMBER() OVER (PARTITION BY f.id_tipoformulario ORDER BY f.fecha_respuesta DESC, f.id_formulario DESC) AS rn
+            FROM formularios f
+            JOIN tipos_formulario tf ON tf.id_tipoformulario = f.id_tipoformulario
+            WHERE f.id_paciente = {paciente_id}
+            AND f.id_tipoformulario IN ({','.join(map(str, post_ids))})
+        )
+        SELECT u.nombreformulario, r.puntuacion
+        FROM ultimos_formularios u
+        JOIN resultados r ON r.id_formulario = u.id_formulario
+        WHERE u.rn = 1
+    """, engine)
+
+    if resultados_recientes.empty:
+        pdf.section_body("No se encontraron puntajes de post-test.")
+    else:
+        for _, row in resultados_recientes.iterrows():
+            pdf.section_body(f"{row.nombreformulario}: {row.puntuacion}")
+
     # Guardar PDF
     output_path = f"Reporte_Paciente_{paciente_id}.pdf"
     pdf.output(output_path)

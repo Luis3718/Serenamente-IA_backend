@@ -14,7 +14,13 @@ from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer
 from fastapi import Security
 from Reportes import generar_pdf_reporte
-from Exportar_preguntas import exportar_pretest_individual, exportar_pretest_completo, exportar_base_completa, exportar_post_tests_individual
+from Exportar_preguntas import (
+    exportar_pretest_individual,
+    exportar_pretest_completo,
+    exportar_posttest_individual,
+    exportar_posttest_completo,
+    exportar_base_completa
+)
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 
@@ -151,7 +157,7 @@ def descargar_base_completa(admin=Depends(obtener_admin_actual)):
 def descargar_posttest_paciente(paciente_id: int, admin=Depends(obtener_admin_actual)):
     try:
         # Genera el archivo con nombre automático
-        filename = exportar_post_tests_individual(paciente_id)
+        filename = exportar_posttest_individual(paciente_id)
 
         if not filename or not os.path.exists(filename):
             raise HTTPException(status_code=404, detail="Archivo no generado")
@@ -164,6 +170,24 @@ def descargar_posttest_paciente(paciente_id: int, admin=Depends(obtener_admin_ac
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al generar el post-test: {str(e)}")
+
+@router.get("/exportar_posttest_completo")
+def descargar_posttest_completo(admin=Depends(obtener_admin_actual)):
+    try:
+        exportar_posttest_completo()
+        filename = "Posttest_Completo.xlsx"
+
+        if not os.path.exists(filename):
+            raise HTTPException(status_code=404, detail="Archivo no generado")
+
+        return FileResponse(
+            path=filename,
+            filename=filename,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            background=BackgroundTask(lambda: os.remove(filename))
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al exportar post-test: {str(e)}")
 
 @router.put("/actualizar_completo/{paciente_id}")
 def actualizar_paciente_completo(

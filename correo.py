@@ -29,7 +29,7 @@ def verificar_token_verificacion(token):
     except Exception:
         return None
 
-def enviar_correo_verificacion(correo):
+def enviar_correo_verificacion(correo, nombre, apellidos):
     try:
         credenciales = cargar_credenciales("smtp_config.txt")
         remitente = credenciales.get("SMTP_USER")
@@ -46,7 +46,7 @@ def enviar_correo_verificacion(correo):
     mensaje["To"] = correo
     mensaje["Subject"] = "Confirmación de Registro en la Plataforma de SerenaMente IA"
     mensaje.attach(MIMEText(
-        f"""Estimado/a ¡Bienvenido/a a la plataforma de SerenaMente IA! 
+        f"""Estimado/a {nombre} {apellidos} ¡Bienvenido/a a la plataforma de SerenaMente IA! 
 Nos complace informarle que su registro ha sido exitoso. A continuación, encontrará los detalles para acceder a la plataforma: 
 
 Verifica tu correo: {enlace}

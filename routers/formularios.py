@@ -100,6 +100,17 @@ def entrevista_contestada(id_paciente: int, db: Session = Depends(get_db)):
 def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     ids_preguntas = [30]
 
+    # Consultar los resultados del formulario con ID 1 (Ansiedad) para este paciente
+    resultado = db.query(Resultado)\
+        .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
+        .filter(Formulario.id_formulario == 1, Formulario.id_paciente == id_paciente)\
+        .first()
+    print(resultado.categoria)
+
+    # Verificar la categoría del resultado
+    if resultado and resultado.categoria == "Severa":
+        return {"status": "No apto", "message": "El paciente tiene un resultado severo en un formulario de ansiedad."}
+
     # Realizar la consulta para obtener las respuestas del paciente a las preguntas específicas
     respuestas = db.query(Respuesta)\
         .filter(Respuesta.id_paciente == id_paciente, Respuesta.id_pregunta.in_(ids_preguntas))\
@@ -107,27 +118,19 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     
     # Evaluar las respuestas
     for respuesta in respuestas:
+        print(respuesta.respuesta)
         if respuesta.respuesta in ['2', '3']:
             return {"status": "No apto", "message": "El paciente tiene respuestas que indican no aptitud."}
-
-    # Consultar los resultados del formulario con ID 1 (Ansiedad) para este paciente
-    resultado = db.query(Resultado)\
-        .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
-        .filter(Formulario.id_formulario == 1, Formulario.id_paciente == id_paciente)\
-        .first()
-
-    # Verificar la categoría del resultado
-    if resultado and resultado.categoria == "Severa":
-        return {"status": "No apto", "message": "El paciente tiene un resultado severo en un formulario de ansiedad."}
     
     # Consultar los resultados del formulario con ID 2 (Depresion) para este paciente
-    resultado = db.query(Resultado)\
+    resultado_form2 = db.query(Resultado)\
         .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
         .filter(Formulario.id_formulario == 2, Formulario.id_paciente == id_paciente)\
         .first()
-    
+    print(resultado_form2.categoria)
+
     # Verificar la categoría del resultado
-    if resultado and resultado.categoria == "Severa":
+    if resultado_form2 and resultado_form2.categoria == "Severa":
         return {"status": "No apto", "message": "El paciente tiene un resultado severo en un formulario de depresion."}
     
     # Consultar los resultados del formulario con ID 3 (Riesgo Suicida) para este paciente
@@ -135,6 +138,7 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
         .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
         .filter(Formulario.id_formulario == 3, Formulario.id_paciente == id_paciente)\
         .first()
+    print(resultado_form3.categoria)
 
     # Consultar los resultados del formulario con ID 3 (Riesgo Suicida) para este paciente
     if resultado_form3 and resultado_form3.categoria in ["Moderado", "Severa"]:
