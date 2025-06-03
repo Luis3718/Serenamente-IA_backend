@@ -154,31 +154,55 @@ def generar_pdf_reporte(paciente_id):
     else:
         pdf.section_body("Sin registros de asignación del sistema experto.")
 
-    # 5. Puntajes más recientes de post-test (solo si tiene post-test válidos)
-    pdf.section_title("Puntajes del post-test")
+   # 5. Puntajes más recientes del post-test (con validación estricta)
+    pdf.section_title("Puntajes recientes del post-test")
 
-    post_ids = [1, 2, 5, 4, 9, 7, 8, 6, 10, 12, 13, 14, 15]
+    post_ids_doble = [1, 2, 5, 4, 9, 7, 8, 6, 10]
+    post_ids_unico = [12, 13, 14, 15]
+    post_ids = post_ids_doble + post_ids_unico
 
-    resultados_recientes = pd.read_sql(f"""
-        WITH ultimos_formularios AS (
-            SELECT f.id_formulario, f.id_tipoformulario, tf.nombreformulario,
-                   ROW_NUMBER() OVER (PARTITION BY f.id_tipoformulario ORDER BY f.fecha_respuesta DESC, f.id_formulario DESC) AS rn
-            FROM formularios f
-            JOIN tipos_formulario tf ON tf.id_tipoformulario = f.id_tipoformulario
-            WHERE f.id_paciente = {paciente_id}
-            AND f.id_tipoformulario IN ({','.join(map(str, post_ids))})
-        )
-        SELECT u.nombreformulario, r.puntuacion
-        FROM ultimos_formularios u
-        JOIN resultados r ON r.id_formulario = u.id_formulario
-        WHERE u.rn = 1
+    # Verificar si el paciente cumple los requisitos
+    conteo_formularios = pd.read_sql(f"""
+        SELECT id_tipoformulario, COUNT(*) AS total
+        FROM formularios
+        WHERE id_paciente = {paciente_id}
+        AND id_tipoformulario IN ({','.join(map(str, post_ids))})
+        GROUP BY id_tipoformulario
     """, engine)
 
-    if resultados_recientes.empty:
-        pdf.section_body("No se encontraron puntajes de post-test.")
-    else:
+    cumple_doble = conteo_formularios[
+        (conteo_formularios.id_tipoformulario.isin(post_ids_doble)) &
+        (conteo_formularios.total >= 2)
+    ].shape[0]
+
+    cumple_unico = conteo_formularios[
+        (conteo_formularios.id_tipoformulario.isin(post_ids_unico)) &
+        (conteo_formularios.total >= 1)
+    ].shape[0]
+
+    if cumple_doble == len(post_ids_doble) and cumple_unico == len(post_ids_unico):
+        resultados_recientes = pd.read_sql(f"""
+            WITH ultimos_formularios AS (
+                SELECT f.id_formulario, f.id_tipoformulario, tf.nombreformulario,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY f.id_tipoformulario
+                        ORDER BY f.fecha_respuesta DESC, f.id_formulario DESC
+                    ) AS rn
+                FROM formularios f
+                JOIN tipos_formulario tf ON tf.id_tipoformulario = f.id_tipoformulario
+                WHERE f.id_paciente = {paciente_id}
+                AND f.id_tipoformulario IN ({','.join(map(str, post_ids))})
+            )
+            SELECT u.nombreformulario, r.puntuacion
+            FROM ultimos_formularios u
+            JOIN resultados r ON r.id_formulario = u.id_formulario
+            WHERE u.rn = 1
+        """, engine)
+
         for _, row in resultados_recientes.iterrows():
             pdf.section_body(f"{row.nombreformulario}: {row.puntuacion}")
+    else:
+        pdf.section_body("No se encontraron resultados del post-test.")
 
     # Guardar PDF
     output_path = f"Reporte_Paciente_{paciente_id}.pdf"
