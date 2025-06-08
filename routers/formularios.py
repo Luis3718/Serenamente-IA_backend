@@ -103,7 +103,8 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     # Consultar los resultados del formulario con ID 1 (Ansiedad) para este paciente
     resultado = db.query(Resultado)\
         .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
-        .filter(Formulario.id_formulario == 1, Formulario.id_paciente == id_paciente)\
+        .filter(Formulario.id_tipoformulario == 1, Formulario.id_paciente == id_paciente)\
+        .order_by(Formulario.fecha_respuesta.desc())\
         .first()
     print(resultado.categoria)
 
@@ -125,7 +126,8 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     # Consultar los resultados del formulario con ID 2 (Depresion) para este paciente
     resultado_form2 = db.query(Resultado)\
         .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
-        .filter(Formulario.id_formulario == 2, Formulario.id_paciente == id_paciente)\
+        .filter(Formulario.id_tipoformulario == 2, Formulario.id_paciente == id_paciente)\
+        .order_by(Formulario.fecha_respuesta.desc())\
         .first()
     print(resultado_form2.categoria)
 
@@ -136,7 +138,8 @@ def evaluar_paciente(id_paciente: int, db: Session = Depends(get_db)):
     # Consultar los resultados del formulario con ID 3 (Riesgo Suicida) para este paciente
     resultado_form3 = db.query(Resultado)\
         .join(Formulario, Formulario.id_formulario == Resultado.id_formulario)\
-        .filter(Formulario.id_formulario == 3, Formulario.id_paciente == id_paciente)\
+        .filter(Formulario.id_tipoformulario == 3, Formulario.id_paciente == id_paciente)\
+        .order_by(Formulario.fecha_respuesta.desc())\
         .first()
     print(resultado_form3.categoria)
 
