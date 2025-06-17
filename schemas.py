@@ -174,15 +174,18 @@ class habilidad_base(BaseModel):
     }
 class AdminHabilidadBase(BaseModel):
     nombre: str
+    actividad_ids: Optional[List[int]] = []
 
 class AdminHabilidadCreate(AdminHabilidadBase):
     pass
 
 class AdminHabilidadUpdate(BaseModel):
     nombre: Optional[str]
+    actividad_ids: Optional[List[int]]
 
-class AdminHabilidadOut(AdminHabilidadBase):
+class AdminHabilidadOut(BaseModel):
     id_habilidad: int
+    nombre: str
 
     class Config:
         orm_mode = True
@@ -193,7 +196,7 @@ class AdminActividadOut(BaseModel):
 
     class Config:
         orm_mode = True
-        
+
 class actividad_base(BaseModel):
     id_habilidad: int
     nombre: str

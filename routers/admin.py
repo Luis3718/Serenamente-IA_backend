@@ -318,6 +318,11 @@ def crear_actividad(data: actividad_create, db: Session = Depends(get_db), admin
 
     return {"message": "Actividad creada correctamente", "actividad": nueva_actividad.id_actividad}
 
+# === GET: Todas las actividades disponibles ===
+@router.get("/habilidades/_todas_actividades", response_model=list[AdminActividadOut])
+def listar_todas_actividades(db: Session = Depends(get_db), admin=Depends(obtener_admin_actual)):
+    return db.query(AdminActividad).order_by(AdminActividad.id_actividad).all()
+
 # === GET: Listar habilidades ===
 @router.get("/habilidades", response_model=list[AdminHabilidadOut])
 def listar(db: Session = Depends(get_db),
@@ -336,10 +341,18 @@ def actividades_por_habilidad(habilidad_id: int,
 def crear(data: AdminHabilidadCreate,
           db: Session = Depends(get_db),
           admin=Depends(obtener_admin_actual)):
-    nueva = AdminHabilidad(**data.dict())
+    nueva = AdminHabilidad(nombre=data.nombre)
     db.add(nueva)
     db.commit()
     db.refresh(nueva)
+
+    # Asignar actividades
+    if data.actividad_ids:
+        db.query(AdminActividad).filter(
+            AdminActividad.id_actividad.in_(data.actividad_ids)
+        ).update({AdminActividad.id_habilidad: nueva.id_habilidad}, synchronize_session="fetch")
+        db.commit()
+
     return nueva
 
 # === PUT: Actualizar habilidad ===
@@ -349,23 +362,20 @@ def actualizar(habilidad_id: int, data: AdminHabilidadUpdate,
                admin=Depends(obtener_admin_actual)):
     habilidad = db.query(AdminHabilidad).get(habilidad_id)
     if not habilidad:
-        raise HTTPException(404, detail="Habilidad no encontrada")
+        raise HTTPException(404, "No encontrada")
 
-    for campo, valor in data.dict(exclude_unset=True).items():
-        setattr(habilidad, campo, valor)
-    
-    db.commit()
-    db.refresh(habilidad)
+    if data.nombre:
+        habilidad.nombre = data.nombre
+        db.commit()
+
+    if data.actividad_ids is not None:
+        # Desasignar todas
+        db.query(AdminActividad).filter_by(id_habilidad=habilidad_id).update({AdminActividad.id_habilidad: None})
+        # Reasignar las seleccionadas
+        if data.actividad_ids:
+            db.query(AdminActividad).filter(
+                AdminActividad.id_actividad.in_(data.actividad_ids)
+            ).update({AdminActividad.id_habilidad: habilidad_id}, synchronize_session="fetch")
+        db.commit()
+
     return habilidad
-
-# === DELETE: Eliminar habilidad ===
-@router.delete("/habilidades/{habilidad_id}", status_code=204)
-def eliminar(habilidad_id: int,
-             db: Session = Depends(get_db),
-             admin=Depends(obtener_admin_actual)):
-    habilidad = db.query(AdminHabilidad).get(habilidad_id)
-    if not habilidad:
-        raise HTTPException(404, detail="Habilidad no encontrada")
-    
-    db.delete(habilidad)
-    db.commit()
