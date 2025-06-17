@@ -23,6 +23,12 @@ from Exportar_preguntas import (
 )
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
+from models import AdminHabilidad
+from models import AdminActividad
+from schemas import (
+    AdminHabilidadCreate, AdminHabilidadUpdate, AdminHabilidadOut
+)
+from schemas import AdminActividadOut
 
 SECRET_KEY = "HBAFIQBbhb2u3412bHB"
 ALGORITHM = "HS256"
@@ -311,3 +317,55 @@ def crear_actividad(data: actividad_create, db: Session = Depends(get_db), admin
     )
 
     return {"message": "Actividad creada correctamente", "actividad": nueva_actividad.id_actividad}
+
+# === GET: Listar habilidades ===
+@router.get("/habilidades", response_model=list[AdminHabilidadOut])
+def listar(db: Session = Depends(get_db),
+           admin=Depends(obtener_admin_actual)):
+    return db.query(AdminHabilidad).order_by(AdminHabilidad.id_habilidad).all()
+
+# === GET: Listar actividades por habilidad ===
+@router.get("/habilidades/{habilidad_id}/actividades", response_model=list[AdminActividadOut])
+def actividades_por_habilidad(habilidad_id: int,
+                              db: Session = Depends(get_db),
+                              admin=Depends(obtener_admin_actual)):
+    return db.query(AdminActividad).filter_by(id_habilidad=habilidad_id).all()
+
+# === POST: Crear nueva habilidad ===
+@router.post("/habilidades", response_model=AdminHabilidadOut, status_code=201)
+def crear(data: AdminHabilidadCreate,
+          db: Session = Depends(get_db),
+          admin=Depends(obtener_admin_actual)):
+    nueva = AdminHabilidad(**data.dict())
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+    return nueva
+
+# === PUT: Actualizar habilidad ===
+@router.put("/habilidades/{habilidad_id}", response_model=AdminHabilidadOut)
+def actualizar(habilidad_id: int, data: AdminHabilidadUpdate,
+               db: Session = Depends(get_db),
+               admin=Depends(obtener_admin_actual)):
+    habilidad = db.query(AdminHabilidad).get(habilidad_id)
+    if not habilidad:
+        raise HTTPException(404, detail="Habilidad no encontrada")
+
+    for campo, valor in data.dict(exclude_unset=True).items():
+        setattr(habilidad, campo, valor)
+    
+    db.commit()
+    db.refresh(habilidad)
+    return habilidad
+
+# === DELETE: Eliminar habilidad ===
+@router.delete("/habilidades/{habilidad_id}", status_code=204)
+def eliminar(habilidad_id: int,
+             db: Session = Depends(get_db),
+             admin=Depends(obtener_admin_actual)):
+    habilidad = db.query(AdminHabilidad).get(habilidad_id)
+    if not habilidad:
+        raise HTTPException(404, detail="Habilidad no encontrada")
+    
+    db.delete(habilidad)
+    db.commit()

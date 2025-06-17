@@ -172,7 +172,28 @@ class habilidad_base(BaseModel):
     model_config = {
         "from_attributes": True
     }
+class AdminHabilidadBase(BaseModel):
+    nombre: str
 
+class AdminHabilidadCreate(AdminHabilidadBase):
+    pass
+
+class AdminHabilidadUpdate(BaseModel):
+    nombre: Optional[str]
+
+class AdminHabilidadOut(AdminHabilidadBase):
+    id_habilidad: int
+
+    class Config:
+        orm_mode = True
+
+class AdminActividadOut(BaseModel):
+    id_actividad: int
+    nombre: str
+
+    class Config:
+        orm_mode = True
+        
 class actividad_base(BaseModel):
     id_habilidad: int
     nombre: str

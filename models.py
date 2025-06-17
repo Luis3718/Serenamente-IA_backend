@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date, Text, Boolean, TIMESTAMP, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
 
@@ -96,12 +97,29 @@ class habilidad(Base):
     id_habilidad = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String(100), nullable=False)
 
+class AdminHabilidad(Base):
+    __tablename__ = "habilidades"
+    __table_args__ = {'extend_existing': True}
+
+    id_habilidad = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(100), nullable=False)
+
 class actividad(Base):
     __tablename__ = "actividades"
 
     id_actividad = Column(Integer, primary_key=True, autoincrement=True)
     id_habilidad = Column(Integer, ForeignKey("habilidades.id_habilidad"), nullable=False)
     nombre = Column(String(100), nullable=False)
+
+class AdminActividad(Base):
+    __tablename__ = "actividades"
+    __table_args__ = {'extend_existing': True}
+
+    id_actividad = Column(Integer, primary_key=True, autoincrement=True)
+    id_habilidad = Column(Integer, ForeignKey("habilidades.id_habilidad"))
+    nombre = Column(String(100), nullable=False)
+
+    habilidad = relationship("AdminHabilidad", backref="actividades")
 
 class respuesta_actividad(Base):
     __tablename__ = "respuestas_actividad"

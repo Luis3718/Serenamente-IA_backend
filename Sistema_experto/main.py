@@ -3,7 +3,7 @@ from reglas.inferencia import evaluar_paciente
 
 def obtener_datos_desde_api(id_paciente):
     try:
-        url = f"http://localhost:8002/formularios/paciente/{id_paciente}/datos_expertos"
+        url = f"http://localhost:8002te/{id_paciente}/datos_expertos"
         response = requests.get(url)
         response.raise_for_status()
         return response.json()
